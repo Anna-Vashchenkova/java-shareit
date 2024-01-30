@@ -25,4 +25,19 @@ public class UserController {
     public User saveNewUser(@RequestBody User user) {
         return userService.saveUser(user);
     }
+
+    @PatchMapping("/{userId}")
+    public User updateUser(@PathVariable("userId") long userId, @RequestBody User user) {
+        return userService.updateUser(userId, user);
+    }
+
+    @GetMapping("/{userId}")
+    public User getUser(@PathVariable("userId") long userId) {
+        return userService.getUserById(userId);
+    }
+
+    @DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable("userId") long userId) {
+         userService.deleteUserById(userId);
+    }
 }

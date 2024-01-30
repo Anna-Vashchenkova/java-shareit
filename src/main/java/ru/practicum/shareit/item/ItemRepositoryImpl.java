@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 @Repository
 public class ItemRepositoryImpl implements ItemRepository{
     private static List<Item> items = new ArrayList<>();
-    private Long lastId = 0L;
+    private Long lastId = 1L;
     @Override
     public List<Item> findByUserId(long userId) {
         return items.stream().filter(item1 -> item1.getOwner().getId() == userId).collect(Collectors.toList());
@@ -19,8 +19,8 @@ public class ItemRepositoryImpl implements ItemRepository{
 
     @Override
     public Item save(Item item) {
-        if (!items.contains(item)) {
-            item.setId(generateItemId(lastId));
+        if (item.getId() == null) {
+            item.setId(generateItemId());
             items.add(item);
         }
         return item;
@@ -37,7 +37,7 @@ public class ItemRepositoryImpl implements ItemRepository{
         }
     }
 
-    private Long generateItemId(Long lastId) {
-        return lastId += 1;
+    private Long generateItemId() {
+        return lastId ++;
     }
 }
