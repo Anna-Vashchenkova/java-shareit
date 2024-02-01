@@ -65,9 +65,6 @@ public class ItemController {
     @GetMapping("/search")
     public List<ItemDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
                               @RequestParam String text) {
-        if (text.isEmpty()) {
-            throw new ValidationException("Строка поиска не может быть пустой.");
-        }
         return itemService.searchItem(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
