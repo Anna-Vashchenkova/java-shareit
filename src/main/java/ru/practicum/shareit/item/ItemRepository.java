@@ -13,5 +13,5 @@ public interface ItemRepository {
 
     Item getItemById(long itemId);
 
-    Item searchItem(String text);
+    List<Item> searchItem(String text);
 }

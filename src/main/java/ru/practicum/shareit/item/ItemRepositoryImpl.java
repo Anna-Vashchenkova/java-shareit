@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.model.Status;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,11 +47,18 @@ public class ItemRepositoryImpl implements ItemRepository{
     }
 
     @Override
-    public Item searchItem(String text) {
+    public List<Item> searchItem(String text) {
         return items.stream()
-                .filter(item -> item.getName().equals(text) || item.getDescription().equals(text))
-                .findFirst()
-                .orElse(null);
+                .filter(
+                        item -> (
+                            (item.getName().toLowerCase().contains(text.toLowerCase()))
+                            ||
+                            (item.getDescription().toLowerCase().contains(text.toLowerCase()))
+                        )
+                        &&
+                        (item.getAvailable() == Status.AVAILABLE)
+                )
+                .collect(Collectors.toList());
     }
 
     private Long generateItemId() {

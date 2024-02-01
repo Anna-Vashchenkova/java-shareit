@@ -2,6 +2,7 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.dto.ItemMapper;
@@ -63,8 +64,13 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ItemDto searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public List<ItemDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
                               @RequestParam String text) {
-        return ItemMapper.toItemDto(itemService.searchItem(text));
+        if (text.isEmpty()) {
+            throw new ValidationException("Строка поиска не может быть пустой.");
+        }
+        return itemService.searchItem(text).stream()
+                .map(ItemMapper::toItemDto)
+                .collect(Collectors.toList());
     }
 }

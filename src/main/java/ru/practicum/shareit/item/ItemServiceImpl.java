@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.UserService;
@@ -88,7 +87,7 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public Item searchItem(String text) {
+    public List<Item> searchItem(String text) {
         return repository.searchItem(text);
     }
 }
