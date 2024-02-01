@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -89,6 +90,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> searchItem(String text) {
+        if (text.isEmpty()) {
+            return Collections.emptyList();
+        }
         return repository.searchItem(text);
     }
 }
