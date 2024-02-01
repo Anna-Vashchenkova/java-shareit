@@ -47,7 +47,7 @@ public class UserServiceImpl implements UserService{
             User userByEmail = repository.getUserByEmail(user.getEmail());
             if (userByEmail == null) {
                 userUpdate.setEmail(user.getEmail());
-            } else  if (userByEmail.getId() != userId) {
+            } else if (userByEmail.getId() != userId) {
                     throw new RuntimeException("Пользователь с таким email уже существует.");
             }
         }

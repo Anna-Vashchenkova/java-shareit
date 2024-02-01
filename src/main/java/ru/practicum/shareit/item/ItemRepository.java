@@ -10,4 +10,8 @@ public interface ItemRepository {
     Item save(Item item);
 
     void deleteByUserIdAndItemId(long userId, long itemId);
+
+    Item getItemById(long itemId);
+
+    Item searchItem(String text);
 }

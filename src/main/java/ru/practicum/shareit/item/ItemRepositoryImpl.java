@@ -14,7 +14,9 @@ public class ItemRepositoryImpl implements ItemRepository{
     private Long lastId = 1L;
     @Override
     public List<Item> findByUserId(long userId) {
-        return items.stream().filter(item1 -> item1.getOwner().getId() == userId).collect(Collectors.toList());
+        return items.stream()
+                .filter(item1 -> item1.getOwner().getId() == userId)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -29,12 +31,26 @@ public class ItemRepositoryImpl implements ItemRepository{
     @Override
     public void deleteByUserIdAndItemId(long userId, long itemId) {
         Optional<Item> itemOptional = items.stream()
-                .filter(item -> (item.getId() == itemId) && (item.getOwner().getId() == userId)
-                )
+                .filter(item -> (item.getId() == itemId) && (item.getOwner().getId() == userId))
                 .findFirst();
         if (itemOptional.isPresent()) {
             items.remove(itemOptional.get().getId());
         }
+    }
+
+    @Override
+    public Item getItemById(long itemId) {
+        return items.stream()
+                .filter(item -> item.getId() == itemId)
+                .findFirst().orElse(null);
+    }
+
+    @Override
+    public Item searchItem(String text) {
+        return items.stream()
+                .filter(item -> item.getName().equals(text) || item.getDescription().equals(text))
+                .findFirst()
+                .orElse(null);
     }
 
     private Long generateItemId() {
