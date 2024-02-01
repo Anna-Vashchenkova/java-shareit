@@ -33,7 +33,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public User getUserById(Long userId) {
         return users.stream()
-                .filter(user -> user.getId() == userId)
+                .filter(user -> user.getId().equals(userId))
                 .findFirst().orElse(null);
     }
 

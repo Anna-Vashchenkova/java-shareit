@@ -35,9 +35,7 @@ public class ItemRepositoryImpl implements ItemRepository {
         Optional<Item> itemOptional = items.stream()
                 .filter(item -> (item.getId() == itemId) && (item.getOwner().getId() == userId))
                 .findFirst();
-        if (itemOptional.isPresent()) {
-            items.remove(itemOptional.get().getId());
-        }
+        itemOptional.ifPresent(item -> items.remove(item));
     }
 
     @Override
