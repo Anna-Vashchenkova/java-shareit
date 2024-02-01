@@ -10,9 +10,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Repository
-public class ItemRepositoryImpl implements ItemRepository{
+public class ItemRepositoryImpl implements ItemRepository {
     private static List<Item> items = new ArrayList<>();
     private Long lastId = 1L;
+
     @Override
     public List<Item> findByUserId(long userId) {
         return items.stream()
@@ -62,6 +63,6 @@ public class ItemRepositoryImpl implements ItemRepository{
     }
 
     private Long generateItemId() {
-        return lastId ++;
+        return lastId++;
     }
 }

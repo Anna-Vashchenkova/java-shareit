@@ -6,9 +6,11 @@ import java.util.List;
 
 public interface UserRepository {
     List<User> findAll();
+
     User save(User user);
 
     User getUserByEmail(String email);
+
     User getUserById(Long userId);
 
     void deleteUserById(long userId);

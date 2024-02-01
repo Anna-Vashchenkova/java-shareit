@@ -16,9 +16,10 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserService userService;
+
     @Override
     public List<Item> getItems(Long userId) {
         return repository.findByUserId(userId);
@@ -37,7 +38,7 @@ public class ItemServiceImpl implements ItemService{
         if (available) {
             status = Status.AVAILABLE;
         } else {
-            status =Status.UNAVAILABLE;
+            status = Status.UNAVAILABLE;
         }
         return repository.save(new Item(
                 id,
@@ -74,7 +75,7 @@ public class ItemServiceImpl implements ItemService{
             if (available) {
                 status = Status.AVAILABLE;
             } else {
-                status =Status.UNAVAILABLE;
+                status = Status.UNAVAILABLE;
             }
             updateItem.setAvailable(status);
         }

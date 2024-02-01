@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserRepositoryImpl implements UserRepository{
+public class UserRepositoryImpl implements UserRepository {
     private static List<User> users = new ArrayList<>();
     private Long lastId = 1L;
 
@@ -43,7 +43,7 @@ public class UserRepositoryImpl implements UserRepository{
     }
 
     private Long generateUserId() {
-        return lastId ++;
+        return lastId++;
     }
 
 }
