@@ -13,10 +13,10 @@ import ru.practicum.shareit.user.model.User;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Item {
-    Long id;
-    String name;
-    String description;
-    Status available;
-    User owner;
-    ItemRequest request;
+    private Long id;
+    private String name;
+    private String description;
+    private Status available;
+    private User owner;
+    private ItemRequest request;
 }
