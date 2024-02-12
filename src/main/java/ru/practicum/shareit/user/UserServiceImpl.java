@@ -32,11 +32,11 @@ public class UserServiceImpl implements UserService {
         return repository.save(user);
     }
 
-    public User updateUser(long userId, User user) {
+    public User updateUser(Long userId, User user) {
         if (user == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
-        User userUpdate = repository.getUserById(userId);
+        User userUpdate = repository.getById(userId);
         if (userUpdate == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
@@ -55,12 +55,12 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getUserById(long userId) {
-        return repository.getUserById(userId);
+    public User getUserById(Long userId) {
+        return repository.getById(userId);
     }
 
     @Override
-    public void deleteUserById(long userId) {
-        repository.deleteUserById(userId);
+    public void deleteUserById(Long userId) {
+        repository.deleteById(userId);
     }
 }

@@ -58,7 +58,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item updateItem(Long userId, Long id, String name, String description, Boolean available) {
-        Item updateItem = repository.getItemById(id);
+        Item updateItem = repository.getById(id);
         if (updateItem == null) {
             throw new DataNotFoundException("Вещь с таким id не найдена.");
         }
@@ -85,7 +85,7 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getItemById(long itemId) {
-        return repository.getItemById(itemId);
+        return repository.getById(itemId);
     }
 
     @Override
