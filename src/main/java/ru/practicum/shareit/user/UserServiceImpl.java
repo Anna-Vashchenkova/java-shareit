@@ -60,7 +60,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User getUserById(Long userId) {
-        return repository.getById(userId);
+        return repository.findById(userId).orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
     }
 
     @Override

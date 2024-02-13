@@ -23,9 +23,9 @@ public class Item {
     @Column(name = "is_available", nullable = false)
     private Status available;
     @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
+    @JoinColumn(name = "owner_id", nullable = false)
     private User owner;
     @ManyToOne
-    @JoinColumn(name = "request_id", nullable = false)
+    @JoinColumn(name = "request_id")
     private ItemRequest request;
 }

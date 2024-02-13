@@ -29,9 +29,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public Item addNewItem(Long userId, Long id, String name, String description, Boolean available) {
         User user = userService.getUserById(userId);
-        if (user == null) {
-            throw new DataNotFoundException("Пользователь не найден.");
-        }
         Status status;
         if ((available == null) || (name == null) || (name.isEmpty()) || (description == null)) {
             throw new ValidationException("В поле available не допустимое значение.");

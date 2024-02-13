@@ -25,7 +25,7 @@ create table if not exists items
     description varchar(200) not null,
     is_available varchar(11) not null,
     owner_id BIGINT not null,
-    request_id BIGINT not null,
+    request_id BIGINT,
     foreign key (owner_id) references users (id) on delete cascade,
     foreign key (request_id) references requests (id) on delete cascade
     );

@@ -3,8 +3,9 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemIncomeDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.item.dto.ItemOutcomeDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -20,7 +21,7 @@ public class ItemController {
     private final ItemService itemService;
 
     @GetMapping
-    public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemOutcomeDto> get(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получен запрос - показать список вещей пользователя '{}'", userId);
         return itemService.getItems(userId).stream()
                 .map(ItemMapper::toItemDto)
@@ -28,8 +29,8 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                    @RequestBody ItemDto dto) {
+    public ItemOutcomeDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
+                             @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на добавление итема '{}' пользователю '{}'",dto, userId);
         return ItemMapper.toItemDto(itemService.addNewItem(
                 userId,
@@ -41,9 +42,9 @@ public class ItemController {
     }
 
     @PatchMapping("/{itemId}")
-    public ItemDto updateItem(@PathVariable("itemId") long itemId,
-                           @RequestHeader("X-Sharer-User-Id") Long userId,
-                           @RequestBody ItemDto dto) {
+    public ItemOutcomeDto updateItem(@PathVariable("itemId") long itemId,
+                                    @RequestHeader("X-Sharer-User-Id") Long userId,
+                                    @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на обновление данных итема '{}' у пользователя '{}'",itemId, userId);
         return ItemMapper.toItemDto(itemService.updateItem(
                 userId,
@@ -55,7 +56,7 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemDto getItemById(@PathVariable("itemId") long itemId) {
+    public ItemOutcomeDto getItemById(@PathVariable("itemId") long itemId) {
         log.info("Получен запрос - показать итем '{}'",itemId);
         return ItemMapper.toItemDto(itemService.getItemById(itemId));
     }
@@ -68,8 +69,8 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
-                              @RequestParam String text) {
+    public List<ItemOutcomeDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
+                                          @RequestParam String text) {
         log.info("Получен запрос на поиск итема по содержанию текста '{}' у пользователя '{}'",text, userId);
         return itemService.searchItem(text).stream()
                 .map(ItemMapper::toItemDto)
