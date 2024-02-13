@@ -7,6 +7,7 @@ import ru.practicum.shareit.item.dto.ItemIncomeDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemOutcomeDto;
 
+import javax.validation.Valid;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -30,7 +31,7 @@ public class ItemController {
 
     @PostMapping
     public ItemOutcomeDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                             @RequestBody ItemIncomeDto dto) {
+                            @Valid @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на добавление итема '{}' пользователю '{}'",dto, userId);
         return ItemMapper.toItemDto(itemService.addNewItem(
                 userId,
