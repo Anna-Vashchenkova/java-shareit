@@ -3,14 +3,15 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.item.dto.ItemMapper;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 import ru.practicum.shareit.user.model.User;
 
+import javax.validation.Valid;
 import java.util.List;
+import java.util.stream.Collectors;
 
-/**
- * TODO Sprint add-controllers.
- *
- */
 @Slf4j
 @RestController
 @RequiredArgsConstructor
@@ -19,27 +20,36 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping
-    public List<User> getAllUsers() {
+    public List<UserDto> getAllUsers() {
         log.info("Получен запрос на получение списка всех пользователей");
-        return userService.getAllUsers();
+        return userService.getAllUsers().stream()
+                .map(UserMapper::toUserDto)
+                .collect(Collectors.toList());
     }
 
     @PostMapping
-    public User saveNewUser(@RequestBody User user) {
-        log.info("Получен запрос на добавление пользователя '{}'", user);
-        return userService.saveUser(user);
+    public UserDto saveNewUser(@Valid @RequestBody UserDto dto) {
+        log.info("Получен запрос на добавление пользователя '{}'", dto);
+        return UserMapper.toUserDto(userService.saveUser(
+                dto.getId(),
+                dto.getEmail(),
+                dto.getName()
+                ));
     }
 
     @PatchMapping("/{userId}")
-    public User updateUser(@PathVariable("userId") Long userId, @RequestBody User user) {
+    public UserDto updateUser(@PathVariable("userId") Long userId, @RequestBody UserDto dto) {
         log.info("Получен запрос на обновление данных пользователя '{}'", userId);
-        return userService.updateUser(userId, user);
+        if (dto.getId() == null) {
+            dto.setId(userId);
+        }
+        return UserMapper.toUserDto(userService.updateUser(userId, UserMapper.toUser(dto)));
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable("userId") Long userId) {
+    public UserDto getUser(@PathVariable("userId") Long userId) {
         log.info("Получен запрос - показать данные пользователя '{}'", userId);
-        return userService.getUserById(userId);
+        return UserMapper.toUserDto(userService.getUserById(userId));
     }
 
     @DeleteMapping("/{userId}")

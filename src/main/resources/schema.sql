@@ -29,3 +29,16 @@ create table if not exists items
     foreign key (owner_id) references users (id) on delete cascade,
     foreign key (request_id) references requests (id) on delete cascade
     );
+
+drop table if exists bookings cascade;
+create table if not exists bookings
+(
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    start_date TIMESTAMP WITHOUT TIME ZONE,
+    end_date TIMESTAMP WITHOUT TIME ZONE,
+    item_id BIGINT not null,
+    booker_id BIGINT not null,
+    status varchar(8) not null,
+    foreign key (item_id) references items (id) on delete cascade,
+    foreign key (booker_id) references users (id) on delete cascade
+    );

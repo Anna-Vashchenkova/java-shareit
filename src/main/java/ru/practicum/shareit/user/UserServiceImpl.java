@@ -21,35 +21,40 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User saveUser(User user) {
-        if ((user.getEmail() == null) || (user.getEmail().isEmpty()) || (!user.getEmail().contains("@"))) {
+    public User saveUser(Long id, String email, String name) {
+        /*if ((user.getEmail() == null) || (user.getEmail().isEmpty()) || (!user.getEmail().contains("@"))) {
             throw new ValidationException("В переданных данных " +
                     "электронная почта не может быть пустой и должна содержать символ @");
         }
         if (repository.getUserByEmail(user.getEmail()) != null) {
             throw new RuntimeException("Пользователь с таким email уже существует.");
-        }
-        return repository.save(user);
+        }*/
+        return repository.save(new User(id, email, name));
     }
 
     public User updateUser(Long userId, User user) {
         if (user == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
-        User userUpdate = repository.getById(userId);
+        if (user.getId() == null) {
+            user.setId(userId);
+        }
+        User userUpdate = repository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь с ID=" + userId + " не найден!"));
         if (userUpdate == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         if (user.getName() != null) {
             userUpdate.setName(user.getName());
         }
+        userUpdate.setEmail(user.getEmail());
         if (user.getEmail() != null) {
             User userByEmail = repository.getUserByEmail(user.getEmail());
             if (userByEmail == null) {
                 userUpdate.setEmail(user.getEmail());
-            } else if (userByEmail.getId() != userId) {
+            } /*else if (userByEmail.getId() != userId) {
                     throw new RuntimeException("Пользователь с таким email уже существует.");
-            }
+            }*/
         }
         return repository.save(userUpdate);
     }
