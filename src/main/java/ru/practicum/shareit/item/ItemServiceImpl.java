@@ -82,7 +82,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Item getItemById(long itemId) {
-        return repository.getById(itemId);
+        Item result = repository.findById(itemId).orElse(null);
+        if (result == null) {
+            throw new DataNotFoundException("Вещь с таким id не найдена.");
+        }
+        return result;
     }
 
     @Override

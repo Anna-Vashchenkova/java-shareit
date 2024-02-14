@@ -4,8 +4,8 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.Status;
 
 public class BookingMapper {
-    public static BookingDto toBookingDto(Booking booking) {
-        return new BookingDto(
+    public static BookingOutcomeDto toBookingDto(Booking booking) {
+        return new BookingOutcomeDto(
              booking.getId(),
              booking.getStart(),
              booking.getEnd(),

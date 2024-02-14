@@ -20,6 +20,7 @@ public class Item {
     private String name;
     @Column(name = "description", nullable = false)
     private String description;
+    @Enumerated(EnumType.STRING)
     @Column(name = "is_available", nullable = false)
     private Status available;
     @ManyToOne
