@@ -11,6 +11,7 @@ import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +29,12 @@ public class BookingServiceImpl implements BookingService {
         }
         Status status = Status.WAITING;
         Item item = itemService.getItemById(itemId);
+        if (item.getAvailable() != ru.practicum.shareit.item.model.Status.AVAILABLE) {
+            throw new ValidationException("Вещь уже забронирована.");
+        }
+        if (start.isAfter(end)) {
+            throw new ValidationException("Время начала бронирования не может быть позже окончания.");
+        }
         /*if (available == null) {
             throw new ValidationException("В поле available не допустимое значение.");
         }
@@ -77,5 +84,19 @@ public class BookingServiceImpl implements BookingService {
             }
         }
         return repository.save(booking);
+    }
+
+    @Override
+    public Booking getBookingById(long bookingId) {
+        return repository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Вещь с таким id не найдена.")
+        );
+    }
+
+    @Override
+    public List<Booking> getBookings(Status state, Long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден.");
+        }
+        return repository.getBookingByBooker_IdAndStatus(state, userId);
     }
 }

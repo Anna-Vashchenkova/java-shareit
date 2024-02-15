@@ -7,6 +7,10 @@ import ru.practicum.shareit.booking.dto.BookingIncomeDto;
 import ru.practicum.shareit.booking.dto.BookingOutcomeDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 
+import javax.validation.Valid;
+import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * TODO Sprint add-bookings.
  */
@@ -19,7 +23,7 @@ public class BookingController {
 
     @PostMapping()
     public BookingOutcomeDto saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                         @RequestBody BookingIncomeDto dto) {
+                                         @Valid @RequestBody BookingIncomeDto dto) {
         log.info("Получен запрос на добавление бронирования '{}' пользователем '{}'",dto, userId);
         return BookingMapper.toBookingDto(bookingService.saveNewBooking(
                 dto.getId(),
@@ -37,5 +41,22 @@ public class BookingController {
         log.info("Получен запрос на обновление статуса бронирования с ID={}", bookingId);
         return BookingMapper.toBookingDto(bookingService.updateBooking(bookingId, userId, approved));
     }
-}
 
+    @GetMapping("/{bookingId}")
+    public BookingOutcomeDto getBookingById(@PathVariable("bookingId") long bookingId) {
+        log.info("Получен запрос на получение информации о бронировании с ID={}", bookingId);
+        return BookingMapper.toBookingDto(bookingService.getBookingById(bookingId));
+    }
+
+    @GetMapping()
+    public List<BookingOutcomeDto> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                     @RequestParam (name = "state", defaultValue = "ALL") String stateParam) {
+        log.info("Получен запрос на получение " +
+                "списка бронирований пользователя с ID={} с параметром STATE={}", userId, stateParam);
+        Status state = (Status.valueOf(stateParam));
+        if (state == null) {
+            throw new IllegalArgumentException("Неизвестный статус бронирования");
+        }
+        return bookingService.getBookings(state, userId).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+    }
+}
