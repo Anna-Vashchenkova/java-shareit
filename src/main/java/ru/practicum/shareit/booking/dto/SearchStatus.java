@@ -1,6 +1,10 @@
 package ru.practicum.shareit.booking.dto;
 
 public enum SearchStatus {
-
+    ALL, //все
+    CURRENT, //текущие
+    PAST, //завершённые **PAST** (англ. «завершённые»),
+    FUTURE, //будущие
+    WAITING, //ожидающие подтверждения
+    REJECTED //отклонённые
 }
-//равен ALL (англ. «все»). Также он может принимать значения CURRENT (англ. «текущие»), **PAST** (англ. «завершённые»), FUTURE (англ. «будущие»), WAITING (англ. «ожидающие подтверждения»), REJECTED (англ. «отклонённые»)

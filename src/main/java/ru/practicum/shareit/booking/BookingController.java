@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingIncomeDto;
 import ru.practicum.shareit.booking.dto.BookingOutcomeDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
+import ru.practicum.shareit.booking.dto.SearchStatus;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -65,10 +66,10 @@ public class BookingController {
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam) {
         log.info("Получен запрос на получение " +
                 "списка бронирований владельцем вещи с ID={} с параметром STATE={}", userId, stateParam);
-        Status state = (Status.valueOf(stateParam));
+        SearchStatus state = SearchStatus.valueOf(stateParam);
         if (state == null) {
             throw new IllegalArgumentException("Неизвестный статус бронирования");
         }
-        return bookingService.getBookings(state, userId).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        return bookingService.getBookingsByOwner(state, userId).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 }

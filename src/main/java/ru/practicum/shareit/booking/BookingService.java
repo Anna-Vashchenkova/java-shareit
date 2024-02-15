@@ -1,5 +1,6 @@
 package ru.practicum.shareit.booking;
 
+import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.item.model.Item;
 
 import java.time.LocalDateTime;
@@ -13,4 +14,6 @@ public interface BookingService {
     Booking getBookingById(long bookingId);
 
     List<Booking> getBookings(Status state, Long userId);
-}
+
+    List<Booking> getBookingsByOwner(SearchStatus state, Long userId);
+    }

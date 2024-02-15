@@ -3,6 +3,7 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
@@ -99,4 +100,14 @@ public class BookingServiceImpl implements BookingService {
         }
         return repository.getBookingByBooker_IdAndStatus(state, userId);
     }
+
+    @Override
+    public List<Booking> getBookingsByOwner(SearchStatus state, Long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден.");
+        }
+        return repository.getBookingByOwner_IdAndStatus(state, userId);
+    }
+
+
 }
