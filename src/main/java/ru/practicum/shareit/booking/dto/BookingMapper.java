@@ -11,7 +11,7 @@ public class BookingMapper {
              booking.getEnd(),
              booking.getItem(),
              booking.getBooker(),
-             booking.getStatus() == Status.WAITING
+             booking.getStatus().name()
         );
     }
 }

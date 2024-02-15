@@ -18,5 +18,5 @@ public class BookingOutcomeDto {
     private LocalDateTime end;
     private Item item;
     private User booker;
-    private Boolean status;
+    private String status;
 }

@@ -32,7 +32,7 @@ public class BookingServiceImpl implements BookingService {
         if (item.getAvailable() != ru.practicum.shareit.item.model.Status.AVAILABLE) {
             throw new ValidationException("Вещь уже забронирована.");
         }
-        if (start.isAfter(end)) {
+        if (start.isAfter(end) || start.equals(end)) {
             throw new ValidationException("Время начала бронирования не может быть позже окончания.");
         }
         /*if (available == null) {
