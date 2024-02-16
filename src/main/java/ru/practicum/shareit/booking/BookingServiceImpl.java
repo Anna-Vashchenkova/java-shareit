@@ -94,19 +94,59 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookings(Status state, Long userId) {
+    public List<Booking> getBookings(Long userId, SearchStatus state) {
         if (userService.getUserById(userId) == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
-        return repository.getBookingByBooker_IdAndStatus(state, userId);
+        List<Booking> bookings;
+        switch (state) {
+            case CURRENT:
+                bookings = repository.getBookingByOwner_Id(userId, LocalDateTime.now());
+                break;
+            case PAST:
+                bookings = repository.getBookingByOwner_IdAndEndBefore(userId, LocalDateTime.now());
+                break;
+            case FUTURE:
+                bookings = repository.getBookingByOwner_IdAndStartAfter(userId, LocalDateTime.now());
+                break;
+            case WAITING:
+                bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.WAITING);
+                break;
+            case REJECTED:
+                bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.REJECTED);
+                break;
+            default:
+                bookings = repository.findAllByOwnerId(userId);
+        }
+        return bookings;
     }
 
     @Override
-    public List<Booking> getBookingsByOwner(SearchStatus state, Long userId) {
+    public List<Booking> getBookingsByOwner(Long userId, SearchStatus state) {
         if (userService.getUserById(userId) == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
-        return repository.getBookingByOwner_IdAndStatus(state, userId);
+        List<Booking> bookings;
+        switch (state) {
+            case CURRENT:
+                bookings = repository.getBookingByOwner_Id(userId, LocalDateTime.now());
+                break;
+            case PAST:
+                bookings = repository.getBookingByOwner_IdAndEndBefore(userId, LocalDateTime.now());
+                break;
+            case FUTURE:
+                bookings = repository.getBookingByOwner_IdAndStartAfter(userId, LocalDateTime.now());
+                break;
+            case WAITING:
+                bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.WAITING);
+                break;
+            case REJECTED:
+                bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.REJECTED);
+                break;
+            default:
+                bookings = repository.findAllByOwnerId(userId);
+        }
+        return bookings;
     }
 
 
