@@ -36,15 +36,16 @@ public class ItemMapper {
                 item.getAvailable() == Status.AVAILABLE,
                 UserMapper.toUserDto(item.getOwner()),
                 item.getRequest() != null ? item.getRequest().getId() : null,
-                new ItemOutcomeInfoDto.BookingDto(
+                lastBooking != null ? new ItemOutcomeInfoDto.BookingDto(
                         lastBooking.getId(),
                         lastBooking.getBooker().getId(),
                         lastBooking.getStart(),
-                        lastBooking.getEnd()),
-                new ItemOutcomeInfoDto.BookingDto(
+                        lastBooking.getEnd()) : null,
+                nextBooking != null ? new ItemOutcomeInfoDto.BookingDto(
                         nextBooking.getId(),
                         nextBooking.getBooker().getId(),
                         nextBooking.getStart(),
-                        nextBooking.getEnd()), comments);
+                        nextBooking.getEnd()) : null,
+                comments);
     }
 }
