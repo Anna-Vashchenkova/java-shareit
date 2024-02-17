@@ -92,6 +92,14 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<Item> findItemsByOwnerId(Long userId) {
+        if (userService.getUserById(userId) == null) {
+            throw new DataNotFoundException("Владелец вещи не найден");
+        }
+        return repository.findByOwnerId(userId);
+    }
+
+    @Override
     public List<Item> searchItem(String text) {
         if (text.isEmpty()) {
             return Collections.emptyList();

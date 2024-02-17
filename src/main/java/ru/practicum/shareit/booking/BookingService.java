@@ -10,7 +10,7 @@ public interface BookingService {
 
     Booking updateBooking(long bookingId, Long userId, Boolean approved);
 
-    Booking getBookingById(long bookingId);
+    Booking getBookingById(Long userId, long bookingId);
 
     List<Booking> getBookings(Long userId, SearchStatus state);
 

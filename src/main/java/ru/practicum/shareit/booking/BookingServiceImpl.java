@@ -13,6 +13,7 @@ import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -80,9 +81,21 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public Booking getBookingById(long bookingId) {
-        return repository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Вещь с таким id не найдена.")
-        );
+    public Booking getBookingById(Long userId, long bookingId) {
+        if (userService.getUserById(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден.");
+        }
+        Booking booking = repository.findById(bookingId)
+                .orElseThrow(() -> new DataNotFoundException("Вещь с таким id не найдена."));
+        List<Item> items = itemService.findItemsByOwnerId(userId);
+        boolean isItemOwner = items.stream().anyMatch(item -> Objects.equals(item.getId(), booking.getItem().getId()));
+        if (booking.getBooker().getId().equals(userId)
+                || (isItemOwner)) {
+            return booking;
+        } else {
+            throw new DataNotFoundException("Посмотреть данные бронирования может только владелец вещи" +
+                    " или бронирующий ее!");
+        }
     }
 
     @Override
@@ -139,6 +152,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = repository.findAllByOwnerId(userId);
         }
         return bookings;
+
     }
 
     @Override

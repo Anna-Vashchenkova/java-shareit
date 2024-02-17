@@ -45,9 +45,10 @@ public class BookingController {
     }
 
     @GetMapping("/{bookingId}")
-    public BookingOutcomeDto getBookingById(@PathVariable("bookingId") long bookingId) {
+    public BookingOutcomeDto getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                            @PathVariable("bookingId") long bookingId) {
         log.info("Получен запрос на получение информации о бронировании с ID={}", bookingId);
-        return BookingMapper.toBookingDto(bookingService.getBookingById(bookingId));
+        return BookingMapper.toBookingDto(bookingService.getBookingById(userId, bookingId));
     }
 
     @GetMapping()
