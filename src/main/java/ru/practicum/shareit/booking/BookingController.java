@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.dto.BookingIncomeDto;
 import ru.practicum.shareit.booking.dto.BookingOutcomeDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.SearchStatus;
+import ru.practicum.shareit.exception.ValidationException;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -54,9 +55,11 @@ public class BookingController {
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam) {
         log.info("Получен запрос на получение " +
                 "списка бронирований пользователя с ID={} с параметром STATE={}", userId, stateParam);
-        SearchStatus state = SearchStatus.valueOf(stateParam);
-        if (state == null) {
-            throw new IllegalArgumentException("Неизвестный статус бронирования");
+        SearchStatus state;
+        try {
+            state = SearchStatus.valueOf(stateParam);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookingService.getBookings(userId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
@@ -66,9 +69,11 @@ public class BookingController {
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam) {
         log.info("Получен запрос на получение " +
                 "списка бронирований владельцем вещи с ID={} с параметром STATE={}", userId, stateParam);
-        SearchStatus state = SearchStatus.valueOf(stateParam);
-        if (state == null) {
-            throw new IllegalArgumentException("Неизвестный статус бронирования");
+        SearchStatus state;
+        try {
+            state = SearchStatus.valueOf(stateParam);
+        } catch (IllegalArgumentException e) {
+            throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
         return bookingService.getBookingsByOwner(userId, state).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }

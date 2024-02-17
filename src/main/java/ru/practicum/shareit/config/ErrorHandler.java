@@ -18,7 +18,7 @@ public class ErrorHandler {
     public ErrorResponse handleInvalidEmail(final ValidationException e) {
         log.info("Ошибка валидации");
         return new ErrorResponse(
-                "Ошибка валидации", e.getMessage()
+                e.getMessage(), e.getMessage()
         );
     }
 
