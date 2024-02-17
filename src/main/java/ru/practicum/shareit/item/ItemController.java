@@ -3,9 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemIncomeDto;
-import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.dto.ItemOutcomeDto;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingService;
+import ru.practicum.shareit.item.dto.*;
+import ru.practicum.shareit.item.model.Comment;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -20,12 +21,23 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ItemController {
     private final ItemService itemService;
+    private final BookingService bookingService;
 
     @GetMapping
-    public List<ItemOutcomeDto> get(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    public List<ItemOutcomeInfoDto> get(@RequestHeader("X-Sharer-User-Id") Long userId) {
         log.info("Получен запрос - показать список вещей пользователя '{}'", userId);
         return itemService.getItems(userId).stream()
-                .map(ItemMapper::toItemDto)
+
+                .map(item ->
+                        {
+                            List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
+                            List<Comment> comments = itemService.getComments(item.getId());
+                            List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
+                                    .map(CommentMapper::toCommentDto)
+                                    .collect(Collectors.toList());
+                            ItemOutcomeInfoDto itemDto = ItemMapper.toItemInfoDto(item, bookings, commentsDto);
+                            return itemDto;
+                        })
                 .collect(Collectors.toList());
     }
 
@@ -76,5 +88,11 @@ public class ItemController {
         return itemService.searchItem(text).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public ItemOutcomeDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
+                                     @Valid @RequestBody ItemIncomeDto dto) {
+        return null;
     }
 }

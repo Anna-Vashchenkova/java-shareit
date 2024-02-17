@@ -36,14 +36,6 @@ public class BookingServiceImpl implements BookingService {
         if (start.isAfter(end) || start.equals(end)) {
             throw new ValidationException("Время начала бронирования не может быть позже окончания.");
         }
-        /*if (available == null) {
-            throw new ValidationException("В поле available не допустимое значение.");
-        }
-        if (available) {
-            status = Status.WAITING;
-        } else {
-            status = Status.REJECTED; //здесь не знаю
-        }*/
         return repository.save(new Booking(id, start, end, item, booker, status));
     }
 
@@ -149,5 +141,8 @@ public class BookingServiceImpl implements BookingService {
         return bookings;
     }
 
-
+    @Override
+    public List<Booking> getBookingsForUser(Long itemId) {
+        return repository.findAllByItemId(itemId);
+    }
 }

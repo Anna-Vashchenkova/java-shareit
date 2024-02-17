@@ -30,4 +30,6 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.status = :status " +
             "order by b.start desc ")
     List<Booking> getBookingByOwner_IdAndStatus(Long userId, Status status); //WAITING ожидающие подтвержд REJECTED отклонённые
+
+    List<Booking> findAllByItemId(Long itemId);
 }

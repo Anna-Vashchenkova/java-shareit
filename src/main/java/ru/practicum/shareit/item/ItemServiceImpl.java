@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
+import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.UserService;
@@ -19,6 +20,7 @@ import java.util.Objects;
 @Slf4j
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
+    private final CommentRepository commentRepository;
     private final UserService userService;
 
     @Override
@@ -95,5 +97,10 @@ public class ItemServiceImpl implements ItemService {
             return Collections.emptyList();
         }
         return repository.searchItem(text);
+    }
+
+    @Override
+    public List<Comment> getComments(Long itemId) {
+        return commentRepository.findAllByItemId(itemId);
     }
 }
