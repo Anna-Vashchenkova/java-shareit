@@ -17,19 +17,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :data and b.end > :data " +
             "order by b.start desc ")
-    List<Booking> getBookingByOwner_Id(Long userId, LocalDateTime data); //CURRENT booking
+    List<Booking> getBookingByOwner_IdAndStartIsBeforeAndEndAfter(Long userId, LocalDateTime data); //CURRENT booking
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.end < :data " +
             "order by b.start desc ")
     List<Booking> getBookingByOwner_IdAndEndBefore(Long userId, LocalDateTime data); //PAST booking
 
-    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start > :data and b.status != ru.practicum.shareit.booking.Status.CANCELED " +
+    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start > :data " +
             "order by b.start desc ")
-    List<Booking> getBookingByOwner_IdAndStartAfter(Long userId, LocalDateTime data); //FUTURE booking добавила проверку на неотмененность
+    List<Booking> getBookingByOwnerIdAndStartAfter(Long userId, LocalDateTime data); //FUTURE booking добавила проверку на неотмененность
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.status = :status " +
             "order by b.start desc ")
     List<Booking> getBookingByOwner_IdAndStatus(Long userId, Status status); //WAITING ожидающие подтвержд REJECTED отклонённые
 
+    @Query("select b from Booking as b where b.item.id = :itemId ")
     List<Booking> findAllByItemId(Long itemId);
 }

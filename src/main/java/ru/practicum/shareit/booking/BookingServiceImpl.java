@@ -31,6 +31,9 @@ public class BookingServiceImpl implements BookingService {
         }
         Status status = Status.WAITING;
         Item item = itemService.getItemById(itemId);
+        if (item.getOwner().getId() == booker.getId()) {
+            throw new DataNotFoundException("Вещь не может быть забронирована её владельцем.");
+        }
         if (item.getAvailable() != ru.practicum.shareit.item.model.Status.AVAILABLE) {
             throw new ValidationException("Вещь уже забронирована.");
         }
@@ -60,7 +63,7 @@ public class BookingServiceImpl implements BookingService {
                 throw new DataNotFoundException("Подтвердить бронирование может только владелец вещи!");
             }
         } else if ((itemValid) && (!booking.getStatus().equals(Status.CANCELED))) {
-            if (!booking.getStatus().equals(Status.WAITING)) {
+            if (!(booking.getStatus().equals(Status.WAITING))) {
                 throw new ValidationException("Решение по бронированию уже принято");
             }
             if (approved) {
@@ -106,13 +109,13 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = repository.getBookingByOwner_Id(userId, LocalDateTime.now());
+                bookings = repository.getBookingByOwner_IdAndStartIsBeforeAndEndAfter(userId, LocalDateTime.now());
                 break;
             case PAST:
                 bookings = repository.getBookingByOwner_IdAndEndBefore(userId, LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = repository.getBookingByOwner_IdAndStartAfter(userId, LocalDateTime.now());
+                bookings = repository.getBookingByOwnerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
             case WAITING:
                 bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.WAITING);
@@ -134,13 +137,13 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = repository.getBookingByOwner_Id(userId, LocalDateTime.now());
+                bookings = repository.getBookingByOwner_IdAndStartIsBeforeAndEndAfter(userId, LocalDateTime.now());
                 break;
             case PAST:
                 bookings = repository.getBookingByOwner_IdAndEndBefore(userId, LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = repository.getBookingByOwner_IdAndStartAfter(userId, LocalDateTime.now());
+                bookings = repository.getBookingByOwnerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
             case WAITING:
                 bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.WAITING);

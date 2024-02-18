@@ -19,7 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select i from Item as i " +
             "where i.owner.id = :userId order by i.id")
-    List<Item> findByUserId(Long userId);
+    List<Item> findAllByUserId(Long userId);
 
     @Query("select i from Item as i " +
             "where i.owner.id = :userId order by i.id")
