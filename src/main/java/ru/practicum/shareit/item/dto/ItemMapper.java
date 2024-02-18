@@ -19,7 +19,10 @@ public class ItemMapper {
     public static ItemOutcomeInfoDto toItemDto2(Item item, List<ItemOutcomeInfoDto.CommentDto> comments) {
         return new ItemOutcomeInfoDto(item.getId(), item.getName(), item.getDescription(),
                 item.getAvailable() == Status.AVAILABLE, UserMapper.toUserDto(item.getOwner()),
-                item.getRequest() != null ? item.getRequest().getId() : null, null, null, null);
+                item.getRequest() != null ? item.getRequest().getId() : null,
+                null,
+                null,
+                comments.isEmpty() ? comments : null);
     }
 
     public static ItemOutcomeInfoDto toItemInfoDto(Item item,
@@ -34,7 +37,11 @@ public class ItemMapper {
                 .filter(b -> ((b.getStart().isBefore(LocalDateTime.now())) || (b.getEnd().isBefore(LocalDateTime.now()))))
                 .max(Comparator.comparing(Booking::getStart)).orElse(null);
         Booking nextBooking = bookings.stream()
-                .filter(b -> ((b.getStart().isAfter(LocalDateTime.now()))))
+                .filter(b -> ((b.getStart().isAfter(LocalDateTime.now()))
+                        &&
+                        (!b.getStatus().equals(ru.practicum.shareit.booking.Status.REJECTED))
+                        &&
+                        (!b.getStatus().equals(ru.practicum.shareit.booking.Status.CANCELED))))
                 .min(Comparator.comparing(Booking::getStart)).orElse(null);
         /*Booking nextBooking = bookings.stream()
                 .filter(b -> ((b.getItem().getId() == item.getId())
@@ -58,6 +65,6 @@ public class ItemMapper {
                         nextBooking.getBooker().getId(),
                         nextBooking.getStart(),
                         nextBooking.getEnd()) : null,
-                comments);
+                comments.isEmpty() ? comments : null);
     }
 }
