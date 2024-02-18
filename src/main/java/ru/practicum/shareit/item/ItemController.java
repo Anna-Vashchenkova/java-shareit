@@ -74,13 +74,18 @@ public class ItemController {
                                           @PathVariable("itemId") Long itemId) {
         log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
         Item item = itemService.getItemById(userId, itemId);
-        List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
-        List<Comment> comments = itemService.getComments(item.getId());
-        List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
+        List<ItemOutcomeInfoDto.CommentDto> commentsDto = itemService.getComments(item.getId()).stream()
                 .map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList());
-        ItemOutcomeInfoDto itemDto = ItemMapper.toItemInfoDto(item, bookings, commentsDto);
-        return itemDto;
+                .collect(Collectors.toList());;
+        if (itemService.userIsOwnerOfItem(userId, itemId)) {
+            List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
+
+            ItemOutcomeInfoDto itemDto = ItemMapper.toItemInfoDto(item, bookings, commentsDto);
+            return itemDto;
+        } else {
+            return ItemMapper.toItemDto2(item, commentsDto);
+        }
+
     }
 
     @DeleteMapping("/{itemId}")

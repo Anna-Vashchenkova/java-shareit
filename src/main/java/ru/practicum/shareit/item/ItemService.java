@@ -21,4 +21,6 @@ public interface ItemService {
     List<Item> searchItem(String text);
 
     List<Comment> getComments(Long iteId);
+
+    boolean userIsOwnerOfItem(long userId, Long itemId);
 }

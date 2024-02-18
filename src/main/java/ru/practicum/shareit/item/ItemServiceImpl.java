@@ -110,4 +110,12 @@ public class ItemServiceImpl implements ItemService {
     public List<Comment> getComments(Long itemId) {
         return commentRepository.findAllByItemId(itemId);
     }
+
+    @Override
+    public boolean userIsOwnerOfItem(long userId, Long itemId) {
+        if (userService.getUserById(userId).getId() == repository.getReferenceById(itemId).getOwner().getId()) {
+            return true;
+        }
+        return false;
+    }
 }
