@@ -1,6 +1,5 @@
 package ru.practicum.shareit.item;
 
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
@@ -15,7 +14,7 @@ public interface ItemService {
 
     Item updateItem(Long userId, Long id, String name, String description, Boolean available);
 
-    Item getItemById(long itemId);
+    Item getItemById(Long userId, long itemId);
 
     List<Item> findItemsByOwnerId(Long userId);
 

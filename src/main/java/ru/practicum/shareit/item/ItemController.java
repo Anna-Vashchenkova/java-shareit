@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
+import ru.practicum.shareit.item.model.Item;
 
 import javax.validation.Valid;
 import java.util.List;
@@ -69,9 +70,17 @@ public class ItemController {
     }
 
     @GetMapping("/{itemId}")
-    public ItemOutcomeDto getItemById(@PathVariable("itemId") long itemId) {
-        log.info("Получен запрос - показать итем '{}'",itemId);
-        return ItemMapper.toItemDto(itemService.getItemById(itemId));
+    public ItemOutcomeInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+                                          @PathVariable("itemId") Long itemId) {
+        log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
+        Item item = itemService.getItemById(userId, itemId);
+        List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
+        List<Comment> comments = itemService.getComments(item.getId());
+        List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
+                .map(CommentMapper::toCommentDto)
+                .collect(Collectors.toList());
+        ItemOutcomeInfoDto itemDto = ItemMapper.toItemInfoDto(item, bookings, commentsDto);
+        return itemDto;
     }
 
     @DeleteMapping("/{itemId}")

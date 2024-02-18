@@ -1,7 +1,6 @@
 package ru.practicum.shareit.item.dto;
 
 import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.dto.UserMapper;
@@ -40,7 +39,7 @@ public class ItemMapper {
                         lastBooking.getId(),
                         lastBooking.getBooker().getId(),
                         lastBooking.getStart(),
-                        lastBooking.getEnd()) : null,
+                        lastBooking.getEnd()): null,
                 nextBooking != null ? new ItemOutcomeInfoDto.BookingDto(
                         nextBooking.getId(),
                         nextBooking.getBooker().getId(),

@@ -28,7 +28,6 @@ public class BookingController {
                                          @Valid @RequestBody BookingIncomeDto dto) {
         log.info("Получен запрос на добавление бронирования '{}' пользователем '{}'",dto, userId);
         return BookingMapper.toBookingDto(bookingService.saveNewBooking(
-                dto.getId(),
                 dto.getStart(),
                 dto.getEnd(),
                 dto.getItemId(),

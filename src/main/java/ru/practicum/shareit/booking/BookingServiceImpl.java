@@ -24,13 +24,13 @@ public class BookingServiceImpl implements BookingService {
     private final ItemService itemService;
 
     @Override
-    public Booking saveNewBooking(Long id, LocalDateTime start, LocalDateTime end, Long itemId, Long userId) {
+    public Booking saveNewBooking(LocalDateTime start, LocalDateTime end, Long itemId, Long userId) {
         User booker = userService.getUserById(userId);
         if (booker == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         Status status = Status.WAITING;
-        Item item = itemService.getItemById(itemId);
+        Item item = itemService.getItemById(userId, itemId); //добавила параметр юзер
         if (item.getOwner().getId() == booker.getId()) {
             throw new DataNotFoundException("Вещь не может быть забронирована её владельцем.");
         }
@@ -40,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
         if (start.isAfter(end) || start.equals(end)) {
             throw new ValidationException("Время начала бронирования не может быть позже окончания.");
         }
-        return repository.save(new Booking(id, start, end, item, booker, status));
+        return repository.save(new Booking(null, start, end, item, booker, status));
     }
 
     @Override

@@ -31,9 +31,6 @@ public class ItemServiceImpl implements ItemService {
     public Item addNewItem(Long userId, Long id, String name, String description, Boolean available) {
         User user = userService.getUserById(userId);
         Status status;
-        /*if ((available == null) || (name == null) || (name.isEmpty()) || (description == null)) {
-            throw new ValidationException("В поле available не допустимое значение.");
-        }*/
         if (available) {
             status = Status.AVAILABLE;
         } else {
@@ -82,7 +79,10 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item getItemById(long itemId) {
+    public Item getItemById(Long userId, long itemId) {
+        if (userService.getUserById(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден.");
+        }
         Item result = repository.findById(itemId).orElse(null);
         if (result == null) {
             throw new DataNotFoundException("Вещь с таким id не найдена.");
