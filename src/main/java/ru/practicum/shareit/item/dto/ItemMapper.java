@@ -60,7 +60,7 @@ public class ItemMapper {
                         lastBooking.getId(),
                         lastBooking.getBooker().getId(),
                         lastBooking.getStart(),
-                        lastBooking.getEnd()): null,
+                        lastBooking.getEnd()) : null,
                 nextBooking != null ? new ItemOutcomeInfoDto.BookingDto(
                         nextBooking.getId(),
                         nextBooking.getBooker().getId(),

@@ -3,16 +3,12 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
-import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.exception.DataNotFoundException;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

@@ -30,8 +30,7 @@ public class ItemController {
         log.info("Получен запрос - показать список вещей пользователя '{}'", userId);
         return itemService.getItems(userId).stream()
 
-                .map(item ->
-                        {
+                .map(item -> {
                             List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
                             List<Comment> comments = commentService.getComments(item.getId());
                             List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
