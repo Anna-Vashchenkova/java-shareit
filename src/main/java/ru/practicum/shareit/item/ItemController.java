@@ -101,12 +101,10 @@ public class ItemController {
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
-/*
 
     @PostMapping("/{itemId}/comment")
-    public  addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
-                                                    @Valid @RequestBody ItemIncomeDto dto) {
-        return null;
+    public List<ItemOutcomeInfoDto.CommentDto> addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
+                                                    @Valid @RequestBody ItemOutcomeInfoDto.CommentDto dto) {
+        return itemService.getComments(itemId).stream().map(CommentMapper::toCommentDto).collect(Collectors.toList());
     }
-*/
 }
