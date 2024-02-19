@@ -3,6 +3,7 @@ package ru.practicum.shareit.item;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface ItemService {
@@ -19,8 +20,6 @@ public interface ItemService {
     List<Item> findItemsByOwnerId(Long userId);
 
     List<Item> searchItem(String text);
-
-    List<Comment> getComments(Long iteId);
 
     boolean userIsOwnerOfItem(long userId, Long itemId);
 }

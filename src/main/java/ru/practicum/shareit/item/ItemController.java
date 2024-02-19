@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 public class ItemController {
     private final ItemService itemService;
     private final BookingService bookingService;
+    private final CommentService commentService;
 
     @GetMapping
     public List<ItemOutcomeInfoDto> get(@RequestHeader("X-Sharer-User-Id") Long userId) {
@@ -32,7 +33,7 @@ public class ItemController {
                 .map(item ->
                         {
                             List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
-                            List<Comment> comments = itemService.getComments(item.getId());
+                            List<Comment> comments = commentService.getComments(item.getId());
                             List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
                                     .map(CommentMapper::toCommentDto)
                                     .collect(Collectors.toList());
@@ -72,7 +73,7 @@ public class ItemController {
                                           @PathVariable("itemId") Long itemId) {
         log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
         Item item = itemService.getItemById(userId, itemId);
-        List<ItemOutcomeInfoDto.CommentDto> commentsDto = itemService.getComments(item.getId()).stream()
+        List<ItemOutcomeInfoDto.CommentDto> commentsDto = commentService.getComments(item.getId()).stream()
                 .map(CommentMapper::toCommentDto)
                 .collect(Collectors.toList());;
         if (itemService.userIsOwnerOfItem(userId, itemId)) {
@@ -103,8 +104,8 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public List<ItemOutcomeInfoDto.CommentDto> addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
+    public ItemOutcomeInfoDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
                                                     @Valid @RequestBody ItemOutcomeInfoDto.CommentDto dto) {
-        return itemService.getComments(itemId).stream().map(CommentMapper::toCommentDto).collect(Collectors.toList());
+        return CommentMapper.toCommentDto(commentService.addComment(userId, itemId, dto.getText()));
     }
 }
