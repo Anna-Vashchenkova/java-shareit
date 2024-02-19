@@ -115,7 +115,7 @@ public class BookingServiceImpl implements BookingService {
                 bookings = repository.getBookingByOwner_IdAndEndBefore(userId, LocalDateTime.now());
                 break;
             case FUTURE:
-                bookings = repository.getBookingByOwnerIdAndStartAfter(userId, LocalDateTime.now());
+                bookings = repository.getBookingForBookerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
             case WAITING:
                 bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.WAITING);

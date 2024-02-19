@@ -15,17 +15,17 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking as b where b.booker.id = :userId order by b.start desc ")
     List<Booking> findAllByOwnerId(Long userId); //ALL
 
-    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :data and b.end > :data " +
+    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :dat and b.end > :date " +
             "order by b.start desc ")
-    List<Booking> getBookingByOwner_IdAndStartIsBeforeAndEndAfter(Long userId, LocalDateTime data); //CURRENT booking
+    List<Booking> getBookingByOwner_IdAndStartIsBeforeAndEndAfter(Long userId, LocalDateTime date); //CURRENT booking
 
-    @Query("select b from Booking as b where b.item.owner.id = :userId and b.end < :data " +
+    @Query("select b from Booking as b where b.item.owner.id = :userId and b.end < :date " +
             "order by b.start desc ")
-    List<Booking> getBookingByOwner_IdAndEndBefore(Long userId, LocalDateTime data); //PAST booking
+    List<Booking> getBookingByOwner_IdAndEndBefore(Long userId, LocalDateTime date); //PAST booking
 
-    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start > :data " +
+    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start > :date " +
             "order by b.start desc ")
-    List<Booking> getBookingByOwnerIdAndStartAfter(Long userId, LocalDateTime data); //FUTURE booking добавила проверку на неотмененность
+    List<Booking> getBookingByOwnerIdAndStartAfter(Long userId, LocalDateTime date); //FUTURE booking добавила проверку на неотмененность
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.status = :status " +
             "order by b.start desc ")
@@ -33,4 +33,8 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking as b where b.item.id = :itemId ")
     List<Booking> findAllByItemId(Long itemId);
+
+    @Query("select b from Booking as b where b.booker.id = :userId and b.start > :date " +
+            "order by b.start desc ")
+    List<Booking> getBookingForBookerIdAndStartAfter(Long userId, LocalDateTime date);
 }
