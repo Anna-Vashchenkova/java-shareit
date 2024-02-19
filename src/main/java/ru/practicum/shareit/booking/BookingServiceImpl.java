@@ -109,22 +109,22 @@ public class BookingServiceImpl implements BookingService {
         List<Booking> bookings;
         switch (state) {
             case CURRENT:
-                bookings = repository.getBookingByOwner_IdAndStartIsBeforeAndEndAfter(userId, LocalDateTime.now());
+                bookings = repository.getBookingForBookerAndStartIsBeforeAndEndAfter(userId, LocalDateTime.now());
                 break;
             case PAST:
-                bookings = repository.getBookingByOwner_IdAndEndBefore(userId, LocalDateTime.now());
+                bookings = repository.getBookingForBookerAndEndBefore(userId, LocalDateTime.now());
                 break;
             case FUTURE:
                 bookings = repository.getBookingForBookerIdAndStartAfter(userId, LocalDateTime.now());
                 break;
             case WAITING:
-                bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.WAITING);
+                bookings = repository.getBookingForBookerAndStatus(userId, Status.WAITING);
                 break;
             case REJECTED:
-                bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.REJECTED);
+                bookings = repository.getBookingForBookerAndStatus(userId, Status.REJECTED);
                 break;
             default:
-                bookings = repository.findAllByOwnerId(userId);
+                bookings = repository.findAllByBookerId(userId);
         }
         return bookings;
     }

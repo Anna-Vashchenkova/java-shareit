@@ -8,11 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
-    @Query("select b from Booking as b where b.booker.id = :userId and b.status = :state " +
-            "order by b.start desc ")
-    List<Booking> getBookingByBooker_IdAndStatus(Long userId, SearchStatus state);
-
-    @Query("select b from Booking as b where b.booker.id = :userId order by b.start desc ")
+    @Query("select b from Booking as b where b.item.owner.id = :userId order by b.start desc ")
     List<Booking> findAllByOwnerId(Long userId); //ALL
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :dat and b.end > :date " +
@@ -36,5 +32,20 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking as b where b.booker.id = :userId and b.start > :date " +
             "order by b.start desc ")
+    List<Booking> getBookingForBookerAndStartIsBeforeAndEndAfter(Long userId, LocalDateTime date);
+
+    @Query("select b from Booking as b where b.booker.id = :userId and b.end < :date " +
+            "order by b.start desc ")
+    List<Booking> getBookingForBookerAndEndBefore(Long userId, LocalDateTime date);
+
+    @Query("select b from Booking as b where b.booker.id = :userId and b.start > :date " +
+            "order by b.start desc ")
     List<Booking> getBookingForBookerIdAndStartAfter(Long userId, LocalDateTime date);
+
+    @Query("select b from Booking as b where b.booker.id = :userId and b.status = :status " +
+            "order by b.start desc ")
+    List<Booking> getBookingForBookerAndStatus(Long userId, Status status);
+
+    @Query("select b from Booking as b where b.booker.id = :userId order by b.start desc ")
+    List<Booking> findAllByBookerId(Long userId);
 }
