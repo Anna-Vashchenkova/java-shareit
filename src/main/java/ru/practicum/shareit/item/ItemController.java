@@ -36,8 +36,7 @@ public class ItemController {
                             List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
                                     .map(CommentMapper::toCommentDto)
                                     .collect(Collectors.toList());
-                            ItemOutcomeInfoDto itemDto = ItemMapper.toItemInfoDto(item, bookings, commentsDto);
-                            return itemDto;
+                            return ItemMapper.toItemInfoDto(item, bookings, commentsDto);
                         })
                 .collect(Collectors.toList());
     }
@@ -48,7 +47,6 @@ public class ItemController {
         log.info("Получен запрос на добавление итема '{}' пользователю '{}'",dto, userId);
         return ItemMapper.toItemDto(itemService.addNewItem(
                 userId,
-                dto.getId(),
                 dto.getName(),
                 dto.getDescription(),
                 dto.getAvailable()
@@ -103,10 +101,12 @@ public class ItemController {
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
+/*
 
     @PostMapping("/{itemId}/comment")
-    public ItemOutcomeDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
-                                     @Valid @RequestBody ItemIncomeDto dto) {
+    public  addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
+                                                    @Valid @RequestBody ItemIncomeDto dto) {
         return null;
     }
+*/
 }

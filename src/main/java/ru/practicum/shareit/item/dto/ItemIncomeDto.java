@@ -13,7 +13,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 public class ItemIncomeDto {
-    private Long id;
     @NotBlank(message = "Название вещи не должно быть пустым")
     private String name;
     @NotBlank(message = "Описание вещи не должно быть пустым")

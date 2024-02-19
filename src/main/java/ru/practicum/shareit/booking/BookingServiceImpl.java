@@ -30,7 +30,7 @@ public class BookingServiceImpl implements BookingService {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         Status status = Status.WAITING;
-        Item item = itemService.getItemById(userId, itemId); //добавила параметр юзер
+        Item item = itemService.getItemById(userId, itemId);
         if (item.getOwner().getId() == booker.getId()) {
             throw new DataNotFoundException("Вещь не может быть забронирована её владельцем.");
         }

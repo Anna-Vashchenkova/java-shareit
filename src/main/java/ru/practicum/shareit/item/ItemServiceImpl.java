@@ -28,7 +28,7 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Item addNewItem(Long userId, Long id, String name, String description, Boolean available) {
+    public Item addNewItem(Long userId, String name, String description, Boolean available) {
         User user = userService.getUserById(userId);
         Status status;
         if (available) {
@@ -37,7 +37,7 @@ public class ItemServiceImpl implements ItemService {
             status = Status.UNAVAILABLE;
         }
         return repository.save(new Item(
-                id,
+                null,
                 name,
                 description,
                 status,
