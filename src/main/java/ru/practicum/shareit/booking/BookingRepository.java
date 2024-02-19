@@ -11,7 +11,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking as b where b.item.owner.id = :userId order by b.start desc ")
     List<Booking> findAllByOwnerId(Long userId); //ALL
 
-    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :dat and b.end > :date " +
+    @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :date and b.end > :date " +
             "order by b.start desc ")
     List<Booking> getBookingByOwner_IdAndStartIsBeforeAndEndAfter(Long userId, LocalDateTime date); //CURRENT booking
 
@@ -30,7 +30,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking as b where b.item.id = :itemId ")
     List<Booking> findAllByItemId(Long itemId);
 
-    @Query("select b from Booking as b where b.booker.id = :userId and b.start > :date " +
+    @Query("select b from Booking as b where b.booker.id = :userId and b.start < :date and b.end > :date " +
             "order by b.start desc ")
     List<Booking> getBookingForBookerAndStartIsBeforeAndEndAfter(Long userId, LocalDateTime date);
 
