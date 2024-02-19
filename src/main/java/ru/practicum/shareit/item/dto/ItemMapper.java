@@ -6,6 +6,7 @@ import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.dto.UserMapper;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -22,7 +23,7 @@ public class ItemMapper {
                 item.getRequest() != null ? item.getRequest().getId() : null,
                 null,
                 null,
-                comments.isEmpty() ? null : comments);
+                comments.isEmpty() ? new ArrayList<>() : comments);
     }
 
     public static ItemOutcomeInfoDto toItemInfoDto(Item item,
@@ -65,6 +66,6 @@ public class ItemMapper {
                         nextBooking.getBooker().getId(),
                         nextBooking.getStart(),
                         nextBooking.getEnd()) : null,
-                comments.isEmpty() ? null : comments);
+                comments.isEmpty() ? new ArrayList<>() : comments);
     }
 }
