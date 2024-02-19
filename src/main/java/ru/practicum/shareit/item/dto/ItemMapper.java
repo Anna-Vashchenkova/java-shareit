@@ -22,7 +22,7 @@ public class ItemMapper {
                 item.getRequest() != null ? item.getRequest().getId() : null,
                 null,
                 null,
-                comments.isEmpty() ? comments : null);
+                comments.isEmpty() ? null : comments);
     }
 
     public static ItemOutcomeInfoDto toItemInfoDto(Item item,
@@ -65,6 +65,6 @@ public class ItemMapper {
                         nextBooking.getBooker().getId(),
                         nextBooking.getStart(),
                         nextBooking.getEnd()) : null,
-                comments.isEmpty() ? comments : null);
+                comments.isEmpty() ? null : comments);
     }
 }

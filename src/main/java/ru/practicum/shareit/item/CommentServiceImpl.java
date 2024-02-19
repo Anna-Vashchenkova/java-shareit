@@ -7,6 +7,7 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.exception.DataNotFoundException;
+import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.UserService;
@@ -50,7 +51,7 @@ public class CommentServiceImpl implements CommentService {
         Booking booking = bookingService.getBookings(userId, SearchStatus.PAST)
                 .stream()
                 .filter(b -> b.getItem().getId() == itemId)
-                .findAny().orElseThrow(() -> new DataNotFoundException("Бронь не найдена"));
+                .findAny().orElseThrow(() -> new ValidationException("Бронь не найдена"));
         return repository.save(new Comment(
                 null, text, item, user, LocalDateTime.now()
         ));
