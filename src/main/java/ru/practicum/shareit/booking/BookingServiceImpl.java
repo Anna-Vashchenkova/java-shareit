@@ -31,7 +31,7 @@ public class BookingServiceImpl implements BookingService {
         }
         Status status = Status.WAITING;
         Item item = itemService.getItemById(userId, itemId);
-        if (item.getOwner().getId() == booker.getId()) {
+        if (item.getOwner().getId().equals(booker.getId())) {
             throw new DataNotFoundException("Вещь не может быть забронирована её владельцем.");
         }
         if (item.getAvailable() != ru.practicum.shareit.item.model.Status.AVAILABLE) {
@@ -55,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Время бронирования уже истекло!");
         }
-        if (booking.getBooker().getId() == userId) {
+        if (booking.getBooker().getId().equals(userId)) {
             if (!approved) {
                 booking.setStatus(Status.CANCELED);
                 log.info("Бронирование отменено.");
