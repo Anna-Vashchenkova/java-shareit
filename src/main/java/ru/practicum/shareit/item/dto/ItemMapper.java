@@ -29,11 +29,6 @@ public class ItemMapper {
     public static ItemOutcomeInfoDto toItemInfoDto(Item item,
                                                              List<Booking> bookings,
                                                              List<ItemOutcomeInfoDto.CommentDto> comments) {
-        /*Booking lastBooking = bookings.stream()
-                .filter(b -> ((b.getItem().getId() == item.getId())
-                        &&
-                        (b.getStart().isBefore(LocalDateTime.now())) || (b.getEnd().isBefore(LocalDateTime.now()))))
-                .findFirst().orElse(null);*/
         Booking lastBooking = bookings.stream()
                 .filter(b -> ((b.getStart().isBefore(LocalDateTime.now())) || (b.getEnd().isBefore(LocalDateTime.now()))))
                 .max(Comparator.comparing(Booking::getStart)).orElse(null);
@@ -44,11 +39,6 @@ public class ItemMapper {
                         &&
                         (!b.getStatus().equals(ru.practicum.shareit.booking.Status.CANCELED))))
                 .min(Comparator.comparing(Booking::getStart)).orElse(null);
-        /*Booking nextBooking = bookings.stream()
-                .filter(b -> ((b.getItem().getId() == item.getId())
-                        &&
-                        (b.getStart().isAfter(LocalDateTime.now()))))
-                .findFirst().orElse(null);*/
         return new ItemOutcomeInfoDto(
                 item.getId(),
                 item.getName(),

@@ -20,8 +20,8 @@ import java.util.List;
 @RequiredArgsConstructor
 @Slf4j
 public class CommentServiceImpl implements CommentService {
-    private  final CommentRepository repository;
-    private  final BookingService bookingService;
+    private final CommentRepository repository;
+    private final BookingService bookingService;
     private final UserService userService;
     private final ItemService itemService;
 
@@ -56,6 +56,4 @@ public class CommentServiceImpl implements CommentService {
                 null, text, item, user, LocalDateTime.now()
         ));
     }
-
-
 }

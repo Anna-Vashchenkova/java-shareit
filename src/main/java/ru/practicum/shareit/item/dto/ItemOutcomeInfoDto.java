@@ -10,9 +10,6 @@ import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.List;
 
-/**
- * TODO Sprint add-controllers.
- */
 @Data
 @AllArgsConstructor
 public class ItemOutcomeInfoDto {
@@ -48,6 +45,5 @@ public class ItemOutcomeInfoDto {
         private long bookerId;
         private LocalDateTime start;
         private LocalDateTime end;
-
     }
 }

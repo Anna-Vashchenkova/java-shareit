@@ -21,13 +21,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User saveUser(Long id, String email, String name) {
-        /*if ((user.getEmail() == null) || (user.getEmail().isEmpty()) || (!user.getEmail().contains("@"))) {
-            throw new ValidationException("В переданных данных " +
-                    "электронная почта не может быть пустой и должна содержать символ @");
-        }
-        if (repository.getUserByEmail(user.getEmail()) != null) {
-            throw new RuntimeException("Пользователь с таким email уже существует.");
-        }*/
         return repository.save(new User(id, email, name));
     }
 

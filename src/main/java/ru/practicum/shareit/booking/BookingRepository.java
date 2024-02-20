@@ -20,7 +20,7 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.start > :date " +
             "order by b.start desc ")
-    List<Booking> getBookingByOwnerIdAndStartAfter(Long userId, LocalDateTime date); //FUTURE booking добавила проверку на неотмененность
+    List<Booking> getBookingByOwnerIdAndStartAfter(Long userId, LocalDateTime date); //FUTURE booking
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.status = :status " +
             "order by b.start desc ")
