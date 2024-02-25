@@ -2,6 +2,8 @@ package ru.practicum.shareit.request;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
@@ -48,5 +50,14 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         return repository.findAllByUserId(userId);
+    }
+
+    @Override
+    public List<ItemRequest> getAllRequests(Long userId, int from, int size) {
+        if (userService.getUserById(userId) == null) {
+            throw new DataNotFoundException("Пользователь не найден.");
+        }
+        Sort sortByDate = Sort.by(Sort.Direction.DESC, "createdTime");
+        return repository.findAll(PageRequest.of(from, size, sortByDate)).getContent();
     }
 }

@@ -1,7 +1,5 @@
 package ru.practicum.shareit.request;
 
-import ru.practicum.shareit.request.dto.ItemRequestDto;
-
 import java.util.List;
 
 public interface ItemRequestService {
@@ -10,4 +8,6 @@ public interface ItemRequestService {
     ItemRequest getRequestById(Long userId, Long requestId);
 
     List<ItemRequest> getRequests(Long userId);
+
+    List<ItemRequest> getAllRequests(Long userId, int from, int size);
 }

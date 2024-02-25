@@ -42,4 +42,13 @@ public class ItemRequestController {
                         })
                 .collect(Collectors.toList());
     }
+
+    @GetMapping("/all")
+    public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                                   @RequestParam(name = "from", defaultValue = "0") int from,
+                                                   @RequestParam(name = "size", defaultValue = "10") int size) {
+        log.info("Получен запрос от пользователя '{}'- показать список запросов других пользователей", userId);
+        return itemRequestService.getAllRequests(userId, from, size).stream()
+                .map(ItemRequestMapper :: toItemRequestDto).collect(Collectors.toList());
+    }
 }
