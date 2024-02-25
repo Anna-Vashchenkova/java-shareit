@@ -41,12 +41,13 @@ public class ItemController {
     @PostMapping
     public ItemOutcomeDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
                             @Valid @RequestBody ItemIncomeDto dto) {
-        log.info("Получен запрос на добавление итема '{}' пользователю '{}'",dto, userId);
+        log.info("Получен запрос на добавление итема '{}' пользователю '{}'", dto, userId);
         return ItemMapper.toItemDto(itemService.addNewItem(
                 userId,
                 dto.getName(),
                 dto.getDescription(),
-                dto.getAvailable()
+                dto.getAvailable(),
+                dto.getRequestId()
         ));
     }
 
