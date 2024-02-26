@@ -135,11 +135,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookingsByOwner(Long userId, SearchStatus state) {
+    public List<Booking> getBookingsByOwner(Long userId, SearchStatus state, int from, int size) {
         if (userService.getUserById(userId) == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         List<Booking> bookings;
+        Sort sortByDate = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
             case CURRENT:
                 bookings = repository.getBookingByOwner_IdAndStartIsBeforeAndEndAfter(userId, LocalDateTime.now());
@@ -157,7 +158,9 @@ public class BookingServiceImpl implements BookingService {
                 bookings = repository.getBookingByOwner_IdAndStatus(userId, Status.REJECTED);
                 break;
             default:
-                bookings = repository.findAllByOwnerId(userId);
+                bookings = repository.findAllByOwnerId(userId,
+                        PageRequest.of(from, size, sortByDate))
+                        .getContent();
         }
         return bookings;
 

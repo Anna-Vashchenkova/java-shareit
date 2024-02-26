@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface BookingRepository extends JpaRepository<Booking, Long> {
     @Query("select b from Booking as b where b.item.owner.id = :userId order by b.start desc ")
-    List<Booking> findAllByOwnerId(Long userId); //ALL
+    Page<Booking> findAllByOwnerId(Long userId, Pageable pageable); //ALL
 
     @Query("select b from Booking as b where b.item.owner.id = :userId and b.start < :date and b.end > :date " +
             "order by b.start desc ")
