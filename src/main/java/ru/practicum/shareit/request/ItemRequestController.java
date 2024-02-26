@@ -44,11 +44,17 @@ public class ItemRequestController {
     }
 
     @GetMapping("/all")
-    public List<ItemRequestDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<ItemRequestInfoDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                    @RequestParam(name = "from", defaultValue = "0") int from,
                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос от пользователя '{}'- показать список запросов других пользователей", userId);
         return itemRequestService.getAllRequests(userId, from, size).stream()
-                .map(ItemRequestMapper :: toItemRequestDto).collect(Collectors.toList());
+                .map(r -> {
+                    List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(r.getId()).stream()
+                            .map(ItemMapper :: toItemDto)
+                            .collect(Collectors.toList());
+                    return ItemRequestMapper.toItemRequestDto2(r, itemsDto);
+                })
+                .collect(Collectors.toList());
     }
 }
