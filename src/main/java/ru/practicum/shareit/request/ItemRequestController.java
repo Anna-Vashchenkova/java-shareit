@@ -7,7 +7,6 @@ import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemOutcomeDto;
-import ru.practicum.shareit.item.dto.ItemOutcomeInfoDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestIncomeDto;
 import ru.practicum.shareit.request.dto.ItemRequestInfoDto;
