@@ -2,6 +2,8 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DataNotFoundException;
@@ -24,7 +26,13 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRequestService itemRequestService;
 
     @Override
-    public List<Item> getItems(Long userId) {
+    public List<Item> getItems(Long userId, int from, int size) {
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        return repository.findAllByUserIdPage(userId, PageRequest.of(from, size, sortById)).getContent();
+    }
+
+    @Override
+    public List<Item> getAllItems(Long userId) {
         return repository.findAllByUserId(userId);
     }
 
@@ -100,11 +108,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItem(String text) {
+    public List<Item> searchItem(String text, int from, int size) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
-        return repository.searchItem(text);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        return repository.searchItem(text, PageRequest.of(from, size, sortById)).getContent();
     }
 
     @Override

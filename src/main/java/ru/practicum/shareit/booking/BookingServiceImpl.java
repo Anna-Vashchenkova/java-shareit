@@ -53,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         }
         Booking booking = repository.findById(bookingId).orElseThrow(() -> new DataNotFoundException("Бронирование не найдено!"));
         Long itemIdFromBooking = booking.getItem().getId();
-        Boolean itemValid = itemService.getItems(userId).stream().anyMatch(item -> item.getId().equals(itemIdFromBooking));
+        Boolean itemValid = itemService.getAllItems(userId).stream().anyMatch(item -> item.getId().equals(itemIdFromBooking));
         if (booking.getEnd().isBefore(LocalDateTime.now())) {
             throw new ValidationException("Время бронирования уже истекло!");
         }
