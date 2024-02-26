@@ -15,5 +15,5 @@ public class ItemRequestInfoDto {
     @NotBlank(message = "Описание вещи не должно быть пустым")
     private String description;
     private LocalDateTime created;
-    private List<ItemOutcomeDto> itemsDto;
+    private List<ItemOutcomeDto> items;
 }

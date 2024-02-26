@@ -15,10 +15,10 @@ public class ItemRequestMapper {
                 itemRequest.getCreatedTime());
     }
 
-    public static ItemRequestInfoDto toItemRequestDto2(ItemRequest itemRequest, List<ItemOutcomeDto> itemsDto) {
+    public static ItemRequestInfoDto toItemRequestDto2(ItemRequest itemRequest, List<ItemOutcomeDto> items) {
         return new ItemRequestInfoDto(itemRequest.getId(),
                 itemRequest.getDescription(),
                 itemRequest.getCreatedTime(),
-                itemsDto.isEmpty() ? new ArrayList<>() : itemsDto);
+                items.isEmpty() ? new ArrayList<>() : items);
     }
 }

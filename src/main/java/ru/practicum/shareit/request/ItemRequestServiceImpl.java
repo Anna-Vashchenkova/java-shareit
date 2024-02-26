@@ -58,6 +58,6 @@ public class ItemRequestServiceImpl implements ItemRequestService {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         Sort sortByDate = Sort.by(Sort.Direction.DESC, "createdTime");
-        return repository.findAll(PageRequest.of(from, size, sortByDate)).getContent();
+        return repository.findAll(userId, PageRequest.of(from, size, sortByDate)).getContent();
     }
 }

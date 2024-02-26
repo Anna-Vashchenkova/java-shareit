@@ -26,6 +26,6 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
     List<Item> findByOwnerId(Long userId);
 
     @Query("select i from Item as i " +
-            "where i.request.id = :requestId")
+            "where i.request != null and i.request.id = :requestId")
     List<Item> findAllByRequestId(long requestId);
 }
