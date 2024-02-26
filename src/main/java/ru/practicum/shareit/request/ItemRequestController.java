@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemOutcomeDto;
+import ru.practicum.shareit.item.dto.ItemOutcomeInfoDto;
 import ru.practicum.shareit.request.dto.ItemRequestDto;
 import ru.practicum.shareit.request.dto.ItemRequestIncomeDto;
 import ru.practicum.shareit.request.dto.ItemRequestInfoDto;
@@ -56,5 +57,15 @@ public class ItemRequestController {
                     return ItemRequestMapper.toItemRequestDto2(r, itemsDto);
                 })
                 .collect(Collectors.toList());
+    }
+
+    @GetMapping("/{requestId}")
+    public ItemRequestInfoDto getRequestById(@RequestHeader("X-Sharer-User-Id") long userId,
+                                             @PathVariable("requestId") Long requestId) {
+        log.info("Получен запрос от пользователя '{}' - показать запрос '{}'", userId, requestId);
+        List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(requestId).stream()
+                .map(ItemMapper :: toItemDto)
+                .collect(Collectors.toList());
+        return ItemRequestMapper.toItemRequestDto2(itemRequestService.getRequestById(userId, requestId), itemsDto);
     }
 }
