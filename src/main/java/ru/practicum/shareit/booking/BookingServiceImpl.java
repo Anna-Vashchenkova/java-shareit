@@ -2,6 +2,8 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.exception.DataNotFoundException;
@@ -102,11 +104,12 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<Booking> getBookings(Long userId, SearchStatus state) {
+    public List<Booking> getBookings(Long userId, SearchStatus state, int from, int size) {
         if (userService.getUserById(userId) == null) {
             throw new DataNotFoundException("Пользователь не найден.");
         }
         List<Booking> bookings;
+        Sort sortByDate = Sort.by(Sort.Direction.DESC, "start");
         switch (state) {
             case CURRENT:
                 bookings = repository.getBookingForBookerAndStartIsBeforeAndEndAfter(userId, LocalDateTime.now());
@@ -124,7 +127,9 @@ public class BookingServiceImpl implements BookingService {
                 bookings = repository.getBookingForBookerAndStatus(userId, Status.REJECTED);
                 break;
             default:
-                bookings = repository.findAllByBookerId(userId);
+                bookings = repository.findAllByBookerId(userId,
+                        PageRequest.of(from, size, sortByDate))
+                        .getContent();
         }
         return bookings;
     }

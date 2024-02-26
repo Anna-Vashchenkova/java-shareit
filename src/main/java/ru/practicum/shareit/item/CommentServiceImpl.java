@@ -48,7 +48,7 @@ public class CommentServiceImpl implements CommentService {
         if (item == null) {
             throw new DataNotFoundException("Вещь с таким id не найдена");
         }
-        Booking booking = bookingService.getBookings(userId, SearchStatus.PAST)
+        Booking booking = bookingService.getBookings(userId, SearchStatus.PAST,0,0)
                 .stream()
                 .filter(b -> b.getItem().getId() == itemId)
                 .findAny().orElseThrow(() -> new ValidationException("Бронь не найдена"));
