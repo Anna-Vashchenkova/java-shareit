@@ -82,10 +82,7 @@ class UserControllerMvcTest {
         mvc.perform(
                     get("/users/1")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\n" +
-                                "  \"name\": \"update\",\n" +
-                                "  \"email\": \"update@user.com\"\n" +
-                                "}"))
+                        )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
                 .andExpect(jsonPath("$.email").value("aa@mail.ru"))
