@@ -121,8 +121,8 @@ class ItemRequestControllerTest {
 
         final ValidationException exception = Assertions.assertThrows(ValidationException.class,
                 () -> itemRequestController.getAllRequests(1L, from, size));
-        //verify(itemService).findItemsByRequestId(anyInt());
-        //verify(itemRequestService).getAllRequests(any(), anyInt(), anyInt());
+        verify(itemService).findItemsByRequestId(anyInt());
+        verify(itemRequestService).getAllRequests(any(), anyInt(), anyInt());
         Assertions.assertEquals("Неверные параметры запроса", exception.getMessage());
     }
 
