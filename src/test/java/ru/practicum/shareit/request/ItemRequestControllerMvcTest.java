@@ -9,10 +9,8 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.dto.ItemOutcomeDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
@@ -99,11 +97,11 @@ class ItemRequestControllerMvcTest {
     @Test
     @DisplayName("При запросе должен вернуться ItemRequestInfoDto")
     void getRequestById_shouldReturnItemRequestInfoDto() throws Exception {
-        Item itemDto1 = new Item(1L, "item1", "--", Status.AVAILABLE, validUser2, request1);
-        Item itemDto2 = new Item(2L, "item2", "--", Status.AVAILABLE, validUser2, request1);
+        Item item1 = new Item(1L, "item1", "--", Status.AVAILABLE, validUser2, request1);
+        Item item2 = new Item(2L, "item2", "--", Status.AVAILABLE, validUser2, request1);
         List<Item> items = new ArrayList<>();
-        items.add(itemDto1);
-        items.add(itemDto2);
+        items.add(item1);
+        items.add(item2);
 
         Mockito.when(this.itemService.findItemsByRequestId(1L)).thenReturn(items);
         Mockito.when(this.itemRequestService.getRequestById(1L, 1L)).thenReturn(request1);
