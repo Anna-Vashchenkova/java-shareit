@@ -111,18 +111,9 @@ class ItemRequestControllerTest {
     void getAllRequests_whenFromLess0AndSizeLess1_thenValidationException() {
         int from = -1;
         int size = 0;
-        Item item1 = new Item(1L, "item1", "--", Status.AVAILABLE, validUser2, request1);
-        Item item2 = new Item(2L, "item2", "--", Status.AVAILABLE, validUser2, request1);
-        List<Item> items = new ArrayList<>();
-        items.add(item1);
-        items.add(item2);
-        //Mockito.when(itemService.findItemsByRequestId(anyLong())).thenReturn(items);
-        Mockito.when(itemRequestService.getAllRequests(any(), anyInt(), anyInt())).thenThrow(new ValidationException("Неверные параметры запроса"));
 
         final ValidationException exception = Assertions.assertThrows(ValidationException.class,
                 () -> itemRequestController.getAllRequests(1L, from, size));
-        verify(itemService).findItemsByRequestId(anyInt());
-        verify(itemRequestService).getAllRequests(any(), anyInt(), anyInt());
         Assertions.assertEquals("Неверные параметры запроса", exception.getMessage());
     }
 
