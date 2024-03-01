@@ -61,7 +61,7 @@ class UserControllerMvcTest {
 
     @Test
     @DisplayName("При запросе несуществующего пользователя должна появиться ошибка ")
-    void updateUser_thenReturnDataNotFoundException() throws Exception {
+    void updateUser_whenUserNotFound_thenReturnDataNotFoundException() throws Exception {
         Mockito.when(this.userService.updateUser(any(), any()))
                 .thenThrow(new DataNotFoundException("Пользователь не найден."));
         mvc.perform(
