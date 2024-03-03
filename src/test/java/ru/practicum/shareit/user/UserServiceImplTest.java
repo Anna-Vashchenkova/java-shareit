@@ -9,6 +9,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.user.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,18 +20,18 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @InjectMocks
-    UserServiceImpl userService;
+    private UserServiceImpl userService;
     @Mock
-    UserRepository mockUserRepository;
+    private UserRepository mockUserRepository;
     @Captor
-    ArgumentCaptor<User> userCaptor;
+    private ArgumentCaptor<User> userCaptor;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
 
     @Test
     @DisplayName("Показать список всех пользователей")
     public void getAllUsers() {
-        List<User> users = mockUserRepository.findAll();
+        List<User> users = new ArrayList<>();
         users.add(validUser1);
         users.add(validUser2);
         Mockito.when(mockUserRepository.findAll())

@@ -22,9 +22,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(UserController.class)
 class UserControllerMvcTest {
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
     @MockBean
-    UserService userService;
+    private UserService userService;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
 

@@ -29,26 +29,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ItemController.class)
 class ItemControllerMvcTest {
     @Autowired
-    MockMvc mvc;
+    private MockMvc mvc;
     @MockBean
-    ItemService itemService;
+    private ItemService itemService;
     @MockBean
-    BookingService bookingService;
+    private BookingService bookingService;
     @MockBean
-    CommentService commentService;
+    private CommentService commentService;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     private LocalDateTime created = LocalDateTime.of(2024, 02, 29, 12, 0, 0);
     private LocalDateTime created2 = LocalDateTime.of(2024, 3, 1, 14, 0, 0);
-    private LocalDateTime created3 = LocalDateTime.of(2024, 3, 30, 20, 0, 0);
-    private ItemRequest request1 = new ItemRequest(1L, "запрос1", validUser1, created);
-    Item item3 = new Item(3L, "дрель", "ddd", Status.AVAILABLE, validUser2, request1);
-    private ItemRequest request2 = new ItemRequest(2L, "запрос2", validUser1, created);
-    Item item4 = new Item(4L, "дрель2", "ddd2", Status.AVAILABLE, validUser2, request2);
-    private ItemRequest request3 = new ItemRequest(3L, "запрос3", validUser2, created);
-    private Item item1 = new Item(1L, "перфоратор", "vvv", Status.AVAILABLE, validUser1, request3);
-    private ItemRequest request4 = new ItemRequest(4L, "запрос4", validUser2, created);
-    private Item item2 = new Item(2L, "перфоратор2", "vvv2", Status.AVAILABLE, validUser1, request4);
+    private ItemRequest request1 = new ItemRequest(1L, "запрос3", validUser2, created);
+    private Item item1 = new Item(1L, "перфоратор", "vvv", Status.AVAILABLE, validUser1, request1);
+    private ItemRequest request2 = new ItemRequest(2L, "запрос4", validUser2, created);
+    private Item item2 = new Item(2L, "перфоратор2", "vvv2", Status.AVAILABLE, validUser1, request2);
     private Booking booking1 = new Booking(1L,
             LocalDateTime.of(2024, 3, 1, 12, 0, 0),
             LocalDateTime.of(2024, 3, 1, 13, 0, 0),
@@ -59,12 +54,6 @@ class ItemControllerMvcTest {
             LocalDateTime.of(2024, 3, 30, 18, 0, 0),
             LocalDateTime.of(2024, 3, 30, 19, 0, 0),
             item1,
-            validUser2,
-            ru.practicum.shareit.booking.Status.APPROVED);
-    private Booking booking3 = new Booking(3L,
-            LocalDateTime.of(2024, 3, 30, 18, 0, 0),
-            LocalDateTime.of(2024, 3, 30, 19, 0, 0),
-            item2,
             validUser2,
             ru.practicum.shareit.booking.Status.APPROVED);
 
@@ -88,7 +77,7 @@ class ItemControllerMvcTest {
     @DisplayName("При запросе должен вернуться ItemOutcomeDto")
     void add_shouldReturnItemOutcomeDto() throws Exception {
         Mockito
-                .when(this.itemService.addNewItem(1L, "перфоратор", "vvv", true, 3L))
+                .when(this.itemService.addNewItem(1L, "перфоратор", "vvv", true, 1L))
                 .thenReturn(item1);
 
         mvc.perform(
@@ -99,7 +88,7 @@ class ItemControllerMvcTest {
                                 "  \"name\": \"перфоратор\",\n" +
                                 "  \"description\": \"vvv\",\n" +
                                 "  \"available\": true,\n" +
-                                "  \"requestId\": 3\n" +
+                                "  \"requestId\": 1\n" +
                                 "}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -109,7 +98,7 @@ class ItemControllerMvcTest {
                 .andExpect(jsonPath("$.owner.id").value(1))
                 .andExpect(jsonPath("$.owner.email").value("aa@mail.ru"))
                 .andExpect(jsonPath("$.owner.name").value("Aa"))
-                .andExpect(jsonPath("$.requestId").value(3));
+                .andExpect(jsonPath("$.requestId").value(1));
 
     }
 
@@ -125,7 +114,7 @@ class ItemControllerMvcTest {
                                 "  \"name\": \"перфоратор\",\n" +
                                 "  \"description\": \"vvv\",\n" +
                                 "  \"available\": true,\n" +
-                                "  \"requestId\": 3\n" +
+                                "  \"requestId\": 1\n" +
                                 "}"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.id").value(1))
@@ -135,7 +124,7 @@ class ItemControllerMvcTest {
                 .andExpect(jsonPath("$.owner.id").value(1))
                 .andExpect(jsonPath("$.owner.email").value("aa@mail.ru"))
                 .andExpect(jsonPath("$.owner.name").value("Aa"))
-                .andExpect(jsonPath("$.requestId").value(3));
+                .andExpect(jsonPath("$.requestId").value(1));
     }
 
     @Test
@@ -151,7 +140,7 @@ class ItemControllerMvcTest {
                                 "  \"name\": \"перфоратор\",\n" +
                                 "  \"description\": \"vvv\",\n" +
                                 "  \"available\": true,\n" +
-                                "  \"requestId\": 3\n" +
+                                "  \"requestId\": 1\n" +
                                 "}"))
                 .andExpect(status().is(400));
     }
@@ -183,7 +172,7 @@ class ItemControllerMvcTest {
                 .andExpect(jsonPath("$.owner.id").value(1))
                 .andExpect(jsonPath("$.owner.email").value("aa@mail.ru"))
                 .andExpect(jsonPath("$.owner.name").value("Aa"))
-                .andExpect(jsonPath("$.requestId").value(3))
+                .andExpect(jsonPath("$.requestId").value(1))
                 .andExpect(jsonPath("$.lastBooking.id").value(1))
                 .andExpect(jsonPath("$.lastBooking.bookerId").value(2))
                 .andExpect(jsonPath("$.lastBooking.start").value("2024-03-01T12:00:00"))
@@ -233,7 +222,7 @@ class ItemControllerMvcTest {
                 .andExpect(jsonPath("$.[0].owner.id").value(1))
                 .andExpect(jsonPath("$.[0].owner.email").value("aa@mail.ru"))
                 .andExpect(jsonPath("$.[0].owner.name").value("Aa"))
-                .andExpect(jsonPath("$.[0].requestId").value(3))
+                .andExpect(jsonPath("$.[0].requestId").value(1))
                 .andExpect(jsonPath("$.[1].id").value(2))
                 .andExpect(jsonPath("$.[1].name").value("перфоратор2"))
                 .andExpect(jsonPath("$.[1].description").value("vvv2"))
@@ -241,7 +230,7 @@ class ItemControllerMvcTest {
                 .andExpect(jsonPath("$.[1].owner.id").value(1))
                 .andExpect(jsonPath("$.[1].owner.email").value("aa@mail.ru"))
                 .andExpect(jsonPath("$.[1].owner.name").value("Aa"))
-                .andExpect(jsonPath("$.[1].requestId").value(4));
+                .andExpect(jsonPath("$.[1].requestId").value(2));
     }
 
     @Test

@@ -30,13 +30,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ItemControllerTest {
     @InjectMocks
-    ItemController itemController;
+    private ItemController itemController;
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
     @Mock
-    BookingService bookingService;
+    private BookingService bookingService;
     @Mock
-    CommentService commentService;
+    private CommentService commentService;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     private LocalDateTime created = LocalDateTime.of(2024, 02, 29, 12, 0, 0);
@@ -70,7 +70,9 @@ class ItemControllerTest {
         UserDto userDto = new UserDto(1L, "aa@mail.ru", "Aa");
         ItemOutcomeDto result = itemController.add(1L, new ItemIncomeDto("перфоратор", "vvv", true, 3L));
         ItemOutcomeDto dto = new ItemOutcomeDto(1L, "перфоратор", "vvv", true, userDto, 3L);
+
         verify(itemService).addNewItem(1L, "перфоратор", "vvv", true, 3L);
+
         Assertions.assertEquals(dto, result);
     }
 
@@ -83,7 +85,9 @@ class ItemControllerTest {
         UserDto userDto = new UserDto(1L, "aa@mail.ru", "Aa");
         ItemOutcomeDto result = itemController.updateItem(1L,1L, new ItemIncomeDto("перфоратор", "vvv", true, 3L));
         ItemOutcomeDto dto = new ItemOutcomeDto(1L, "перфоратор", "vvv", true, userDto, 3L);
+
         verify(itemService).updateItem(1L, 1L, "перфоратор", "vvv", true);
+
         Assertions.assertEquals(dto, result);
     }
 
@@ -112,7 +116,6 @@ class ItemControllerTest {
         ItemOutcomeInfoDto.CommentDto commentDto = new ItemOutcomeInfoDto.CommentDto(1L, "super", userDto2.getName(), created2);
         commentDtos.add(commentDto);
         ItemOutcomeInfoDto dto = new ItemOutcomeInfoDto(1L, "перфоратор", "vvv", true, userDto, 3L, bookingDto, null, commentDtos);
-
         ItemOutcomeInfoDto result = itemController.getItemById(1L, 1L);
 
         verify(itemService).getItemById(1L, 1L);
@@ -149,6 +152,7 @@ class ItemControllerTest {
 
         ItemOutcomeInfoDto.CommentDto dto = new ItemOutcomeInfoDto.CommentDto(1L, "super", "Bb", created2);
         ItemOutcomeInfoDto.CommentDto result = itemController.addComment(1L, 1L, new ItemOutcomeInfoDto.CommentDto(1L, "super", "Bb", created2));
+
         verify(commentService).addComment(1L, 1L, "super");
 
         Assertions.assertEquals(dto, result);

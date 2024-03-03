@@ -29,15 +29,14 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class ItemRequestControllerTest {
     @InjectMocks
-    ItemRequestController itemRequestController;
+    private ItemRequestController itemRequestController;
     @Mock
-    ItemRequestService itemRequestService;
+    private ItemRequestService itemRequestService;
     @Mock
-    ItemService itemService;
+    private ItemService itemService;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     private UserDto validUserDto1 = new UserDto(1L, "aa@mail.ru", "Aa");
-
     private LocalDateTime created = LocalDateTime.of(2024, 02, 29, 12, 0, 0);
     private ItemRequest request1 = new ItemRequest(1L, "запрос1", validUser1, created);
     private ItemRequest request2 = new ItemRequest(2L, "запрос2", validUser1, created);
@@ -67,6 +66,7 @@ class ItemRequestControllerTest {
     @DisplayName("Вызывается сервис")
     void getRequests_thenUseService() {
         itemRequestController.getRequests(1L);
+
         verify(itemRequestService).getRequests(1L);
     }
 
@@ -79,6 +79,7 @@ class ItemRequestControllerTest {
         Mockito.when(itemRequestService.getRequests(1L)).thenReturn(itemRequests);
 
         List<ItemRequestInfoDto> resultRequests = itemRequestController.getRequests(1L);
+
         Assertions.assertEquals(2, resultRequests.size());
     }
 
@@ -86,6 +87,7 @@ class ItemRequestControllerTest {
     @DisplayName("Вызывается сервис")
     void getAllRequests_thenUseService() {
         itemRequestController.getAllRequests(1L, 0, 10);
+
         verify(itemRequestService).getAllRequests(1L, 0, 10);
     }
 
@@ -112,6 +114,7 @@ class ItemRequestControllerTest {
 
         final ValidationException exception = Assertions.assertThrows(ValidationException.class,
                 () -> itemRequestController.getAllRequests(1L, from, size));
+
         Assertions.assertEquals("Неверные параметры запроса", exception.getMessage());
     }
 
@@ -120,6 +123,7 @@ class ItemRequestControllerTest {
     void getRequestById_thenUseService() {
         Mockito.when(itemRequestService.getRequestById(any(), any())).thenReturn(request1);
         itemRequestController.getRequestById(1L, 1L);
+
         verify(itemRequestService).getRequestById(1L, 1L);
     }
 

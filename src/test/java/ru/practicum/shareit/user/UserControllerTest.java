@@ -18,13 +18,13 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class UserControllerTest {
     @InjectMocks
-    UserController userController;
+    private UserController userController;
     @Mock
-    UserService mockUserService;
+    private UserService mockUserService;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     @Captor
-    ArgumentCaptor<User> userCaptor;
+    private ArgumentCaptor<User> userCaptor;
 
     @Test
     @DisplayName("Вызывается сервис")
