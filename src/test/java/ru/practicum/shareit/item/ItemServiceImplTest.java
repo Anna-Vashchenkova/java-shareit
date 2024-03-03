@@ -38,8 +38,8 @@ class ItemServiceImplTest {
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     private LocalDateTime created = LocalDateTime.of(2024, 02, 29, 12, 0, 0);
     private LocalDateTime created2 = LocalDateTime.of(2024, 3, 1, 14, 0, 0);
-    private ItemRequest request1 = new ItemRequest(3L, "запрос1", validUser2, created);
-    private ItemRequest request2 = new ItemRequest(4L, "запрос2", validUser2, created);
+    private ItemRequest request1 = new ItemRequest(1L, "запрос1", validUser2, created);
+    private ItemRequest request2 = new ItemRequest(2L, "запрос2", validUser2, created);
     private Item item1 = new Item(1L, "перфоратор", "vvv", Status.AVAILABLE, validUser1, request1);
     private Item item2 = new Item(2L, "перфоратор2", "vvv2", Status.AVAILABLE, validUser1, request2);
     private Booking booking1 = new Booking(1L,
@@ -91,18 +91,17 @@ class ItemServiceImplTest {
     }
 
     @Test
-    @DisplayName("2")
-    void addNewItem2() {
-    }
+    @DisplayName("При вводе параметра available = false вернуть итем со статусом UNAVAILABLE")
+    void addNewItem_whenAvailableIsFalse_thenReturnItemIsUNAVAILABLE() {
+        Boolean available = false;
+        Item itemUnavailable = new Item(1L, "перфоратор", "vvv", Status.UNAVAILABLE, validUser1, request1);
+        Mockito.when(userService.getUserById(1L)).thenReturn(validUser1);
+        Mockito.when(itemRequestService.getRequestById(1L, 1L)).thenReturn(request1);
+        Mockito.when(repository.save(any())).thenReturn(itemUnavailable);
 
-    @Test
-    @DisplayName("3")
-    void addNewItem3() {
-    }
+        Item resultItem = itemService.addNewItem(1L, "перфоратор", "vvv", available, 1L);
 
-    @Test
-    @DisplayName("4")
-    void addNewItem4() {
+        Assertions.assertEquals(itemUnavailable, resultItem);
     }
 
     @Test
