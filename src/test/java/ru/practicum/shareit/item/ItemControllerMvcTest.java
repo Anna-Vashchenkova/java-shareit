@@ -189,7 +189,7 @@ class ItemControllerMvcTest {
 
     @Test
     @DisplayName("При запросе ответ 200")
-    void deleteItem() throws Exception{
+    void deleteItem() throws Exception {
         mvc.perform(
                         delete("/items/1")
                                 .header("X-Sharer-User-Id", 1))

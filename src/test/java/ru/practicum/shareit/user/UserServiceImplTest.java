@@ -45,7 +45,7 @@ class UserServiceImplTest {
     @Test
     @DisplayName("Корректное сохранение пользователя")
     public void saveUser_whenUserValid_thenSaveUser() {
-        User user = new User(3l, "new@mail.ru", "new");
+        User user = new User(3L, "new@mail.ru", "new");
         Mockito.when(mockUserRepository.save(any())).thenReturn(user);
 
         User result = userService.saveUser(3L, "new@mail.ru", "new");

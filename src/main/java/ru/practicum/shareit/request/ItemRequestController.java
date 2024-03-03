@@ -37,7 +37,7 @@ public class ItemRequestController {
         return itemRequestService.getRequests(userId).stream()
                 .map(r -> {
                             List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(r.getId()).stream()
-                                    .map(ItemMapper :: toItemDto)
+                                    .map(ItemMapper::toItemDto)
                                     .collect(Collectors.toList());
                             return ItemRequestMapper.toItemRequestDto2(r, itemsDto);
                         })
@@ -52,10 +52,10 @@ public class ItemRequestController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return itemRequestService.getAllRequests(userId, from/size, size).stream()
+        return itemRequestService.getAllRequests(userId, from / size, size).stream()
                 .map(r -> {
                     List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(r.getId()).stream()
-                            .map(ItemMapper :: toItemDto)
+                            .map(ItemMapper::toItemDto)
                             .collect(Collectors.toList());
                     return ItemRequestMapper.toItemRequestDto2(r, itemsDto);
                 })
@@ -67,7 +67,7 @@ public class ItemRequestController {
                                              @PathVariable("requestId") Long requestId) {
         log.info("Получен запрос от пользователя '{}' - показать запрос '{}'", userId, requestId);
         List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(requestId).stream()
-                .map(ItemMapper :: toItemDto)
+                .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
         return ItemRequestMapper.toItemRequestDto2(itemRequestService.getRequestById(userId, requestId), itemsDto);
     }

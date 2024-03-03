@@ -31,7 +31,7 @@ public class ItemController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return itemService.getItems(userId, from/size, size).stream()
+        return itemService.getItems(userId, from / size, size).stream()
 
                 .map(item -> {
                             List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
@@ -106,7 +106,7 @@ public class ItemController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return itemService.searchItem(text, from/size, size).stream()
+        return itemService.searchItem(text, from / size, size).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
     }
