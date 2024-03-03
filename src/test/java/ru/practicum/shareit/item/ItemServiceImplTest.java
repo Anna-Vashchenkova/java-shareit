@@ -4,12 +4,14 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.request.ItemRequest;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class ItemServiceImplTest {
@@ -48,6 +51,7 @@ class ItemServiceImplTest {
             item1,
             validUser2,
             ru.practicum.shareit.booking.Status.APPROVED);
+    private ArgumentCaptor<Item> itemCaptor;
 
     @Test
     @DisplayName("Показать список всех итемов")
@@ -105,11 +109,57 @@ class ItemServiceImplTest {
     }
 
     @Test
-    void deleteItem() {
+    void deleteItem_thenUserRepository() {
+        itemService.deleteItem(1L, 1L);
+
+        verify(repository).deleteByUserIdAndItemId(1L, 1L);
     }
 
     @Test
-    void updateItem() {
+    @DisplayName("При валидных параметрах вернуть Item")
+    void updateItem_whenParamIsValid_thenReturnItem() {
+        Long userId = 1L;
+        Boolean available = true;
+        Mockito.when(repository.getById(1L)).thenReturn(item1);
+        Mockito.when(repository.save(any())).thenReturn(item1);
+
+        Item result = itemService.updateItem(userId, 1L, "перфоратор", "vvv", available);
+
+        Assertions.assertEquals(item1, result);
+    }
+
+    @Test
+    @DisplayName("Item не найден - вернуть DataNotFoundException")
+    void updateItem_whenItemNotFound_thenReturnDataNotFoundException() {
+        Mockito.when(repository.getById(10L)).thenReturn(null);
+
+        DataNotFoundException exception = Assertions.assertThrows(DataNotFoundException.class,
+                () -> itemService.updateItem(1L, 10L, "перфоратор", "vvv", true));
+
+        Assertions.assertEquals("Вещь с таким id не найдена.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("Id пользователя и id владельца вещи не совпадают - вернуть DataNotFoundException")
+    void updateItem_whenUserIdNotEqualsOwnerId_thenReturnDataNotFoundException() {
+        Long userId = 10L;
+        Mockito.when(repository.getById(1L)).thenReturn(item1);
+
+        DataNotFoundException exception = Assertions.assertThrows(DataNotFoundException.class,
+                () -> itemService.updateItem(userId, 1L, "перфоратор", "vvv", true));
+
+        Assertions.assertEquals("Не трогайте чужое!", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("При вводе параметра available = false вернуть итем со статусом UNAVAILABLE")
+    void updateItem_whenAvailableIsFalse_thenReturnItemIsUNAVAILABLE() {
+        Boolean available = false;
+        Item itemUnavailable = new Item(1L, "перфоратор", "vvv", Status.UNAVAILABLE, validUser1, request1);
+        Mockito.when(repository.getById(1L)).thenReturn(itemUnavailable);
+
+        itemService.updateItem(1L, 1L, "перфоратор", "vvv", available);
+        Assertions.assertEquals(itemUnavailable, item1);
     }
 
     @Test
