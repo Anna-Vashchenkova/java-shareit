@@ -4,9 +4,7 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.Mockito;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import ru.practicum.shareit.booking.dto.SearchStatus;
@@ -40,6 +38,8 @@ class BookingServiceImplTest {
     private UserService userService;
     @Mock
     private ItemService itemService;
+    @Captor
+    ArgumentCaptor<Booking> bookingCaptor;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     private LocalDateTime created = LocalDateTime.now().minusDays(1L);
@@ -180,6 +180,23 @@ class BookingServiceImplTest {
     }
 
     @Test
+    @DisplayName("При обновлении отклоненного бронирования владельцем итема вернуть ValidationException")
+    void updateBooking_whenStatusIsCANCELED_thenReturnValidationException() {
+        LocalDateTime startTest = LocalDateTime.now();
+        LocalDateTime endTest = LocalDateTime.now().plusHours(3);
+        Item itemTest = new Item(3L, "itemTest", "descriptionTest", ru.practicum.shareit.item.model.Status.AVAILABLE, validUser1, request1);
+        List<Item> items = List.of(itemTest);
+        Booking oldBooking = new Booking(1L, startTest, endTest, itemTest, validUser2, Status.WAITING);
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(validUser2);
+        Mockito.when(itemService.getAllItems(any())).thenReturn(items);
+        Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(oldBooking));
+
+        Booking result = bookingService.updateBooking(oldBooking.getId(), validUser2.getId(), false);
+        verify(repository).save(bookingCaptor.capture());
+        Assertions.assertEquals(Status.CANCELED, bookingCaptor.getValue().getStatus());
+   }
+
+    @Test
     @DisplayName("При вылидных параметрах вернуть Booking")
     void getBookingById_whenParamIsValid_thenReturnBooking() {
         Long userId = 1L;
@@ -223,7 +240,6 @@ class BookingServiceImplTest {
         Long bookingId = 1L;
         List<Item> items = new ArrayList<>();
         items.add(item1);
-        //boolean isItemOwner = true;
         Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
 
         DataNotFoundException exception = Assertions.assertThrows(
@@ -235,11 +251,11 @@ class BookingServiceImplTest {
 
     @Test
     @DisplayName("Получение бронирования по пользователю CURRENT")
-    void getBookings_whenUser_CURRENT_thenReturnBookings() {
-        Long userId = 1L;
+    void getBookings_whenUserFoundAnsStatusCURRENT_thenReturnBookings() {
+        Long userId = 2L;
         List<Booking> bookings = List.of(booking1);
-        when(userService.getUserById(anyLong())).thenReturn(validUser2);
-        when(repository.getBookingForBookerAndStartIsBeforeAndEndAfter(
+        Mockito.when(userService.getUserById(anyLong())).thenReturn(validUser2);
+        Mockito.when(repository.getBookingForBookerAndStartIsBeforeAndEndAfter(
                 anyLong(), any())).thenReturn(bookings);
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.CURRENT, 0, 10);
@@ -248,9 +264,9 @@ class BookingServiceImplTest {
     }
 
     @Test
-    @DisplayName("Получение бронирования по пользователю CURRENT")
+    @DisplayName("Получение бронирования по пользователю PAST")
     void getBookings_whenUser_PAST_thenReturnBookings() {
-        Long userId = 1L;
+        Long userId = 2L;
         List<Booking> bookings = List.of(booking1);
         when(userService.getUserById(anyLong())).thenReturn(validUser2);
         when(repository.getBookingForBookerAndEndBefore(anyLong(), any())).thenReturn(bookings);
@@ -327,10 +343,120 @@ class BookingServiceImplTest {
     }
 
     @Test
-    void getBookingsByOwner() {
+    @DisplayName("Получение бронирования по пользователю-владельцу CURRENT")
+    void getBookingsByOwner_whenUserFoundAnsStatusCURRENT_thenReturnBookings() {
+        Long userId = 1L;
+        List<Booking> bookings = List.of(booking1);
+        Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
+        Mockito.when(repository.getBookingByOwner_IdAndStartIsBeforeAndEndAfter(any(), any())).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.CURRENT, 0, 10);
+
+        assertEquals(bookings, result);
     }
 
     @Test
-    void getBookingsForUser() {
+    @DisplayName("Получение бронирования по пользователю-владельцу PAST")
+    void getBookingsByOwner_whenUserFoundAnsStatusPAST_thenReturnBookings() {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now().minusDays(1L);
+        LocalDateTime end = LocalDateTime.now().minusHours(6L);
+        Booking bookingPast = new Booking(1L, start, end, item1, validUser2, Status.APPROVED);
+        List<Booking> bookings = List.of(bookingPast);
+        Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
+        Mockito.when(repository.getBookingByOwner_IdAndEndBefore(any(), any())).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.PAST, 0, 10);
+
+        assertEquals(bookings, result);
+    }
+
+    @Test
+    @DisplayName("Получение бронирования по пользователю-владельцу - статус FUTURE")
+    void getBookingsByOwner_whenUserFoundAnsStatusFUTURE_thenReturnBookings() {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now().plusHours(6L);
+        LocalDateTime end = LocalDateTime.now().plusDays(1L);
+        Booking bookingF = new Booking(1L, start, end, item1, validUser2, Status.WAITING);
+        List<Booking> bookings = List.of(bookingF);
+        Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
+        Mockito.when(repository.getBookingByOwnerIdAndStartAfter(any(), any())).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.FUTURE, 0, 10);
+
+        assertEquals(bookings, result);
+    }
+
+    @Test
+    @DisplayName("Получение бронирования по пользователю-владельцу- статус WAITING")
+    void getBookingsByOwner_whenUserFoundAnsStatusWAITING_thenReturnBookings() {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1L);
+        Booking booking = new Booking(1L, start, end, item1, validUser2, Status.WAITING);
+        List<Booking> bookings = List.of(booking);
+        Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
+        Mockito.when(repository.getBookingByOwner_IdAndStatus(any(), any())).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.WAITING, 0, 10);
+
+        assertEquals(bookings, result);
+    }
+
+    @Test
+    @DisplayName("Получение бронирования по пользователю-владельцу -статус REJECTED")
+    void getBookingsByOwner_whenUserFoundAnsStatusREJECTED_thenReturnBookings() {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1L);
+        Booking booking = new Booking(1L, start, end, item1, validUser2, Status.REJECTED);
+        List<Booking> bookings = List.of(booking);
+        Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
+        Mockito.when(repository.getBookingByOwner_IdAndStatus(any(), any())).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.REJECTED, 0, 10);
+
+        assertEquals(bookings, result);
+    }
+
+    @Test
+    @DisplayName("Получение всех бронирований по пользователю-владельцу -статус ALL")
+    void getBookingsByOwner_whenUserFoundAnsStatusALL_thenReturnBookings() {
+        Long userId = 1L;
+        LocalDateTime start = LocalDateTime.now();
+        LocalDateTime end = LocalDateTime.now().plusDays(1L);
+        Booking booking = new Booking(1L, start, end, item1, validUser2, Status.WAITING);
+        List<Booking> bookings = List.of(booking);
+        Page mockPage = Mockito.mock(Page.class);
+        Mockito.when(mockPage.getContent()).thenReturn(bookings);
+        Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
+        Mockito.when(repository.findAllByOwnerId(any(), any())).thenReturn(mockPage);
+
+        List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.ALL, 0, 10);
+
+        assertEquals(bookings, result);
+    }
+
+    @Test
+    @DisplayName("При значении пользователя null вернуть ошибку")
+    void getBookingsByOwner_whenUserIsNotFound_thenReturnDataNotFoundException() {
+        Long userId = 10L;
+        Mockito.when(userService.getUserById(userId)).thenReturn(null);
+
+        DataNotFoundException exception = Assertions.assertThrows(DataNotFoundException.class,
+                () -> bookingService.getBookingsByOwner(userId, SearchStatus.ALL, 0, 10));
+
+        Assertions.assertEquals("Пользователь не найден.", exception.getMessage());
+    }
+
+    @Test
+    @DisplayName("При запросе получить список бронирований по id итема")
+    void getBookingsForUser_shouldReturnBookings() {
+        Long itemId = 1L;
+        List<Booking> bookings = List.of(booking1);
+        Mockito.when(repository.findAllByItemId(itemId)).thenReturn(bookings);
+
+        List<Booking> result = bookingService.getBookingsForUser(itemId);
+        assertEquals(bookings, result);
     }
 }
