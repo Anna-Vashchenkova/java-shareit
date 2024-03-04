@@ -12,6 +12,7 @@ import java.util.Objects;
 @Getter
 @Setter
 @ToString
+@Builder
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
