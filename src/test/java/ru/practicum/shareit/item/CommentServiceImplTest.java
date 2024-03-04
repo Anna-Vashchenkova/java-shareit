@@ -26,8 +26,6 @@ import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceImplTest {
-    public static final long USER_2_ID = 2L;
-    public static final long ITEM_ID = 1L;
     @InjectMocks
     CommentServiceImpl commentService;
     @Mock
@@ -40,6 +38,8 @@ class CommentServiceImplTest {
     private ItemService itemService;
     @Captor
     private ArgumentCaptor<Comment> commentCaptor;
+    public static final long USER_2_ID = 2L;
+    public static final long ITEM_ID = 1L;
     private User validUser1 = new User(1L, "aa@mail.ru", "Aa");
     private User validUser2 = new User(2L, "bb@mail.ru", "Bb");
     private LocalDateTime created = LocalDateTime.of(2024, 02, 29, 12, 0, 0);
