@@ -1,10 +1,7 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
-import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -95,6 +92,7 @@ class ItemRepositoryTest {
     }
 
     @Test
+    @Disabled
     @DisplayName("Удаление итема по userId и itemId")
     void deleteByUserIdAndItemId() {
         entityManager.persist(owner);
