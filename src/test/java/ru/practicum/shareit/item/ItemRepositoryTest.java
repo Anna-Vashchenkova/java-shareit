@@ -20,6 +20,9 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertAll;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 @ActiveProfiles("test")
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -107,7 +110,10 @@ class ItemRepositoryTest {
         repository.deleteByUserIdAndItemId(item1.getId(), owner.getId());
         List<Item> result = repository.findByOwnerId(item1.getOwner().getId());
 
-        Assertions.assertTrue(items.size() == result.size() && items.containsAll(result) && result.containsAll(items));
+        assertAll(
+                ()->assertTrue(items.size() == result.size()),
+                ()->assertTrue(items.containsAll(result))
+        );
     }
 
     @Test
