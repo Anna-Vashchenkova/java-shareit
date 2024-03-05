@@ -12,7 +12,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.dto.BookingIncomeDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingOutcomeDto;
-import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.request.ItemRequest;
@@ -126,11 +125,8 @@ class BookingControllerTest {
     @DisplayName("При запросе вернуть все бронирования пользователя - список BookingOutcomeDto")
     void getBookingsByUser_shouldReturnBookingOutcomeDtos() {
         Long userId = 1L;
-        Long itemId = 1L;
-        Long bookingId = 1L;
         int from = 0;
         int size = 10;
-        SearchStatus status;
         List<Booking> bookings = List.of(booking1, booking2);
         List<BookingOutcomeDto> bookingOutcomeDtos = bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
         Mockito.when(bookingService.getBookings(anyLong(), any(), anyInt(), anyInt())).thenReturn(bookings);
@@ -141,6 +137,18 @@ class BookingControllerTest {
     }
 
     @Test
+    @DisplayName("При запросе вернуть все бронирования владельца - список BookingOutcomeDto")
     void getBookingsByOwner() {
+        Long userId = 1L;
+        int from = 0;
+        int size = 10;
+        List<Booking> bookings = List.of(booking1, booking2);
+        List<BookingOutcomeDto> bookingOutcomeDtos = bookings.stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
+        Mockito.when(bookingService.getBookingsByOwner(anyLong(), any(), anyInt(), anyInt())).thenReturn(bookings);
+
+        List<BookingOutcomeDto> result = bookingController.getBookingsByOwner(userId, "ALL", from / size, size);
+
+        Assertions.assertTrue(bookingOutcomeDtos.size() == result.size() && bookingOutcomeDtos.containsAll(result) && result.containsAll(bookingOutcomeDtos));
+
     }
 }
