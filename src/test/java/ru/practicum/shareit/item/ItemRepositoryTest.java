@@ -15,13 +15,10 @@ import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.request.ItemRequest;
-import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 @ActiveProfiles("test")
 @DataJpaTest
@@ -32,8 +29,6 @@ class ItemRepositoryTest {
     private Pageable pageable =  PageRequest.of(0, 10);
     private User booker;
     private User owner;
-    private UserDto bookerDto;
-    private UserDto ownerDto;
     private LocalDateTime created;
     private LocalDateTime start;
     private LocalDateTime end;
@@ -133,18 +128,66 @@ class ItemRepositoryTest {
     }
 
     @Test
+    @DisplayName("Вернуть список всех итемов по Id пользователя")
     void findAllByUserId() {
+        entityManager.persist(owner);
+        entityManager.persist(booker);
+        entityManager.persist(request1);
+        entityManager.persist(request2);
+        entityManager.persist(item1);
+        entityManager.persist(item2);
+        List<Item> items = List.of(item1, item2);
+
+        List<Item> result = repository.findAllByUserId(owner.getId());
+
+        Assertions.assertTrue(items.size() == result.size() && items.containsAll(result) && result.containsAll(items));
     }
 
     @Test
+    @DisplayName("Вернуть список всех итемов в виде страниц по Id пользователя")
     void findAllByUserIdPage() {
+        entityManager.persist(owner);
+        entityManager.persist(booker);
+        entityManager.persist(request1);
+        entityManager.persist(request2);
+        entityManager.persist(item1);
+        entityManager.persist(item2);
+        List<Item> items = List.of(item1, item2);
+
+        List<Item> result = repository.findAllByUserIdPage(owner.getId(), pageable).getContent();
+
+        Assertions.assertTrue(items.size() == result.size() && items.containsAll(result) && result.containsAll(items));
     }
 
     @Test
     void findByOwnerId() {
+        entityManager.persist(owner);
+        entityManager.persist(booker);
+        entityManager.persist(request1);
+        entityManager.persist(request2);
+        entityManager.persist(item1);
+        entityManager.persist(item2);
+        List<Item> items = List.of(item1, item2);
+
+        List<Item> result = repository.findByOwnerId(owner.getId());
+
+        Assertions.assertTrue(items.size() == result.size() && items.containsAll(result) && result.containsAll(items));
     }
 
     @Test
     void findAllByRequestId() {
+        item2.setRequest(request1);
+        entityManager.persist(owner);
+        entityManager.persist(booker);
+        entityManager.persist(request1);
+        entityManager.persist(request2);
+        entityManager.persist(item1);
+        entityManager.persist(item2);
+
+        List<Item> items = List.of(item1, item2);
+
+        List<Item> result = repository.findAllByRequestId(request1.getId());
+
+        Assertions.assertTrue(items.size() == result.size() && items.containsAll(result) && result.containsAll(items));
     }
 }
