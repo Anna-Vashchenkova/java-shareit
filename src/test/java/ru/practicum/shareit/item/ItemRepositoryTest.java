@@ -50,7 +50,7 @@ class ItemRepositoryTest {
                 .email("user2@mail.ru")
                 .build();
         start = LocalDateTime.now().plusHours(1);
-        end = LocalDateTime.now().plusDays(5); //////////////////
+        end = LocalDateTime.now().plusDays(5);
         request1 = ItemRequest.builder()
                 .description("request1")
                 .requestor(booker)
