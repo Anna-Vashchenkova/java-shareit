@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ItemRepositoryTest {
     private final TestEntityManager entityManager;
     private final ItemRepository repository;
-    private Pageable pageable =  PageRequest.of(0, 10);
+    private Pageable pageable = PageRequest.of(0, 10);
     private User booker;
     private User owner;
     private LocalDateTime created;
@@ -111,8 +111,8 @@ class ItemRepositoryTest {
         List<Item> result = repository.findByOwnerId(item1.getOwner().getId());
 
         assertAll(
-                ()->assertTrue(items.size() == result.size()),
-                ()->assertTrue(items.containsAll(result))
+                () -> assertTrue(items.size() == result.size()),
+                () -> assertTrue(items.containsAll(result))
         );
     }
 
