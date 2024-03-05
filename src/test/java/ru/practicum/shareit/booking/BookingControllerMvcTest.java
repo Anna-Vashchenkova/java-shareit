@@ -96,7 +96,8 @@ class BookingControllerMvcTest {
     @Test
     @DisplayName("При запросе на подтверждение должен вернуться BookingOutcomeDto")
     void approveBooking() throws Exception {
-        Mockito.when(bookingService.updateBooking(1L,1L,true)).thenReturn(booking1);
+        Booking bookingTest = new Booking(1L, start, end, item1, booker, ru.practicum.shareit.booking.Status.APPROVED);
+        Mockito.when(bookingService.updateBooking(1L,1L,true)).thenReturn(bookingTest);
         bookingOutcomeDto.setStatus(ru.practicum.shareit.booking.Status.APPROVED.name());
         String result = mvc.perform(patch("/bookings/1", 1L)
                         .header("X-Sharer-User-Id", 1L)
