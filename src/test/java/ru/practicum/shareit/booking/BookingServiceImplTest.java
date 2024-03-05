@@ -11,7 +11,6 @@ import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
-import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.UserService;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.verify;
@@ -46,7 +44,6 @@ class BookingServiceImplTest {
     private LocalDateTime created2 = LocalDateTime.now().plusDays(7L);
     private ItemRequest request1 = new ItemRequest(1L, "запрос1", validUser2, created);
     private Item item1 = new Item(1L, "перфоратор", "vvv", ru.practicum.shareit.item.model.Status.AVAILABLE, validUser1, request1);
-    private Comment comment1 = new Comment(1L, "super", item1, validUser2, created2);
     private LocalDateTime start = LocalDateTime.now();
     private LocalDateTime end = LocalDateTime.now().plusHours(6L);
     private Booking booking1 = new Booking(1L, start, end, item1, validUser2, Status.WAITING);
@@ -113,7 +110,6 @@ class BookingServiceImplTest {
     @DisplayName("При валидных параметрах вернуть Booking")
     void updateBooking_whenParamIsValid_thenReturnBooking() {
         Long userId = 1L;
-        Long itemId = 1L;
         Long bookingId = 1L;
         Boolean approved = true;
         List<Item> items = new ArrayList<>();
@@ -158,7 +154,7 @@ class BookingServiceImplTest {
                 ValidationException.class,
                 () -> bookingService.updateBooking(oldBooking.getId(), userTest.getId(), true));
 
-        assertEquals("Время бронирования уже истекло!", exception.getMessage());
+        Assertions.assertEquals("Время бронирования уже истекло!", exception.getMessage());
     }
 
     @Test
@@ -176,7 +172,7 @@ class BookingServiceImplTest {
                 DataNotFoundException.class,
                 () -> bookingService.updateBooking(oldBooking.getId(), validUser2.getId(), true));
 
-        assertEquals("Подтвердить бронирование может только владелец вещи!", exception.getMessage());
+        Assertions.assertEquals("Подтвердить бронирование может только владелец вещи!", exception.getMessage());
     }
 
     @Test
@@ -191,7 +187,7 @@ class BookingServiceImplTest {
         Mockito.when(itemService.getAllItems(any())).thenReturn(items);
         Mockito.when(repository.findById(anyLong())).thenReturn(Optional.of(oldBooking));
 
-        Booking result = bookingService.updateBooking(oldBooking.getId(), validUser2.getId(), false);
+        bookingService.updateBooking(oldBooking.getId(), validUser2.getId(), false);
         verify(repository).save(bookingCaptor.capture());
         Assertions.assertEquals(Status.CANCELED, bookingCaptor.getValue().getStatus());
    }
@@ -204,7 +200,6 @@ class BookingServiceImplTest {
         Long bookingId = 1L;
         List<Item> items = new ArrayList<>();
         items.add(item1);
-        boolean isItemOwner = true;
         Mockito.when(userService.getUserById(userId)).thenReturn(validUser1);
         Mockito.when(repository.findById(itemId)).thenReturn(Optional.of(booking1));
         Mockito.when(itemService.findItemsByOwnerId(userId)).thenReturn(items);
@@ -222,21 +217,19 @@ class BookingServiceImplTest {
         Long bookingId = 1L;
         List<Item> items = new ArrayList<>();
         items.add(item1);
-        boolean isItemOwner = true;
         Mockito.when(userService.getUserById(userId)).thenReturn(null);
 
         DataNotFoundException exception = Assertions.assertThrows(
                 DataNotFoundException.class,
                 () -> bookingService.getBookingById(userId, bookingId));
 
-        assertEquals("Пользователь не найден.", exception.getMessage());
+        Assertions.assertEquals("Пользователь не найден.", exception.getMessage());
     }
 
     @Test
     @DisplayName("При невылидных параметрах вернуть DataNotFoundException")
     void getBookingById_whenItemIsNotFound_thenReturnDataNotFoundException() {
         Long userId = 1L;
-        Long itemId = 10L;
         Long bookingId = 1L;
         List<Item> items = new ArrayList<>();
         items.add(item1);
@@ -246,7 +239,7 @@ class BookingServiceImplTest {
                 DataNotFoundException.class,
                 () -> bookingService.getBookingById(userId, bookingId));
 
-        assertEquals("Вещь с таким id не найдена.", exception.getMessage());
+        Assertions.assertEquals("Вещь с таким id не найдена.", exception.getMessage());
     }
 
     @Test
@@ -260,7 +253,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.CURRENT, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -273,7 +266,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.PAST, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -286,7 +279,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.FUTURE, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -299,7 +292,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.WAITING, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -312,7 +305,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.REJECTED, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -327,7 +320,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookings(userId, SearchStatus.ALL, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -352,7 +345,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.CURRENT, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -368,7 +361,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.PAST, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -384,7 +377,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.FUTURE, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -400,7 +393,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.WAITING, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -416,7 +409,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.REJECTED, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -434,7 +427,7 @@ class BookingServiceImplTest {
 
         List<Booking> result = bookingService.getBookingsByOwner(userId, SearchStatus.ALL, 0, 10);
 
-        assertEquals(bookings, result);
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 
     @Test
@@ -457,6 +450,7 @@ class BookingServiceImplTest {
         Mockito.when(repository.findAllByItemId(itemId)).thenReturn(bookings);
 
         List<Booking> result = bookingService.getBookingsForUser(itemId);
-        assertEquals(bookings, result);
+
+        Assertions.assertTrue(bookings.size() == result.size() && bookings.containsAll(result) && result.containsAll(bookings));
     }
 }

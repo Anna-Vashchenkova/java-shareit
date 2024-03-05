@@ -1,6 +1,7 @@
 package ru.practicum.shareit.booking;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -89,7 +90,7 @@ class BookingControllerMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
+        Assertions.assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
     }
 
     @Test
@@ -105,7 +106,7 @@ class BookingControllerMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
+        Assertions.assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
     }
 
     @Test
@@ -120,7 +121,7 @@ class BookingControllerMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
+        Assertions.assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
     }
 
     @Test
@@ -140,7 +141,7 @@ class BookingControllerMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(objectMapper.writeValueAsString(dtoList), result);
+        Assertions.assertEquals(objectMapper.writeValueAsString(dtoList), result);
     }
 
     @Test
@@ -160,6 +161,6 @@ class BookingControllerMvcTest {
                 .getResponse()
                 .getContentAsString();
 
-        assertEquals(objectMapper.writeValueAsString(dtoList), result);
+        Assertions.assertEquals(objectMapper.writeValueAsString(dtoList), result);
     }
 }
