@@ -30,8 +30,6 @@ class BookingRepositoryTest {
     private Pageable pageable =  PageRequest.of(0, 10);
     private User booker;
     private User owner;
-    private UserDto bookerDto;
-    private UserDto ownerDto;
     private LocalDateTime created;
     private LocalDateTime start;
     private LocalDateTime end;
@@ -52,8 +50,6 @@ class BookingRepositoryTest {
                 .name("owner")
                 .email("user2@mail.ru")
                 .build();
-        bookerDto = new UserDto(1L, "user1@mail.ru", "user1");
-        ownerDto = new UserDto(2L, "user2@mail.ru", "user2");
         created = LocalDateTime.now();
         start = LocalDateTime.now().plusHours(1);
         end = LocalDateTime.now().plusDays(10);
