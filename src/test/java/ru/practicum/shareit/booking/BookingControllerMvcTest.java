@@ -21,6 +21,7 @@ import ru.practicum.shareit.request.ItemRequest;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
+import javax.persistence.EntityNotFoundException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -90,6 +91,20 @@ class BookingControllerMvcTest {
                 .getContentAsString();
 
         Assertions.assertEquals(objectMapper.writeValueAsString(bookingOutcomeDto), result);
+    }
+
+    @Test
+    @DisplayName("Возникает ошибка, если во время сохранения не найдена сущность")
+    void throwNotFoundException() throws Exception {
+        Mockito.when(bookingService.saveNewBooking(start, end, 1L, 1L)).thenThrow(new EntityNotFoundException());
+
+         mvc.perform(post("/bookings")
+                        .header("X-Sharer-User-Id", 1L)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .characterEncoding(StandardCharsets.UTF_8)
+                        .content(objectMapper.writeValueAsString(bookingIncomeDto)))
+                .andExpect(status().isNotFound());
+
     }
 
     @Test
