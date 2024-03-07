@@ -48,7 +48,7 @@ public class ItemRequestController {
     public List<ItemRequestInfoDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                    @RequestParam(name = "from", defaultValue = "0") int from,
                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("Получен запрос от пользователя '{}'- показать список запросов других пользователей", userId);
+        log.info("Получен запрос от пользователя '{}'- показать {} запросов других пользователей на {} странице ", userId, size, from);
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }

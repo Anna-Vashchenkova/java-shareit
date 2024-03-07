@@ -27,7 +27,7 @@ public class ItemController {
     public List<ItemOutcomeInfoDto> get(@RequestHeader("X-Sharer-User-Id") Long userId,
                                         @RequestParam(name = "from", defaultValue = "0") int from,
                                         @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("Получен запрос - показать список вещей пользователя '{}'", userId);
+        log.info("Получен запрос - показать список вещей пользователя '{}' по {} элементов на странице {}", userId, size, from);
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
@@ -102,7 +102,7 @@ public class ItemController {
                                           @RequestParam String text,
                                            @RequestParam(name = "from", defaultValue = "0") int from,
                                            @RequestParam(name = "size", defaultValue = "10") int size) {
-        log.info("Получен запрос на поиск итема по содержанию текста '{}' у пользователя '{}'",text, userId);
+        log.info("Получен запрос на поиск итема по содержанию текста '{}' у пользователя '{}', {} элементов на {} странице",text, userId, size, from);
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }

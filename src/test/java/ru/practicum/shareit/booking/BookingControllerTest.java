@@ -29,9 +29,9 @@ import static org.mockito.Mockito.verify;
 @ExtendWith(MockitoExtension.class)
 class BookingControllerTest {
     @InjectMocks
-    BookingController bookingController;
+    private BookingController bookingController;
     @Mock
-    BookingService bookingService;
+    private BookingService bookingService;
     private User booker;
     private User owner;
     private UserDto bookerDto;

@@ -53,7 +53,7 @@ public class BookingController {
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на получение " +
-                "списка бронирований пользователя с ID={} с параметром STATE={}", userId, stateParam);
+                "{} бронирований на странице {} пользователя с ID={} с параметром STATE={}",size, from, userId, stateParam);
         SearchStatus state;
         try {
             state = SearchStatus.valueOf(stateParam);
@@ -72,7 +72,7 @@ public class BookingController {
                                                       @RequestParam(name = "from", defaultValue = "0") int from,
                                                       @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на получение " +
-                "списка бронирований владельцем вещи с ID={} с параметром STATE={}", userId, stateParam);
+                "{} бронирований на странице {} владельцем вещи с ID={} с параметром STATE={}",size, from, userId, stateParam);
         SearchStatus state;
         try {
             state = SearchStatus.valueOf(stateParam);
