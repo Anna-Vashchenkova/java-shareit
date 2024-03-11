@@ -1,12 +1,16 @@
 package ru.practicum.shareit.item;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.List;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
+    @Modifying
     @Query("delete from Item as i " +
             "where i.id = :id and i.owner.id = :userId")
     void deleteByUserIdAndItemId(Long userId, Long id);
@@ -15,7 +19,7 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
             "where (upper(i.name) like upper(concat('%', :text, '%')) " +
             " or upper(i.description) like upper(concat('%', :text, '%'))) " +
             "and i.available = ru.practicum.shareit.item.model.Status.AVAILABLE ")
-    List<Item> searchItem(String text);
+    Page<Item> searchItem(String text, Pageable pageable);
 
     @Query("select i from Item as i " +
             "where i.owner.id = :userId order by i.id")
@@ -23,5 +27,13 @@ public interface ItemRepository extends JpaRepository<Item, Long> {
 
     @Query("select i from Item as i " +
             "where i.owner.id = :userId order by i.id")
+    Page<Item> findAllByUserIdPage(Long userId, Pageable pageable);
+
+    @Query("select i from Item as i " +
+            "where i.owner.id = :userId order by i.id")
     List<Item> findByOwnerId(Long userId);
+
+    @Query("select i from Item as i " +
+            "where i.request != null and i.request.id = :requestId")
+    List<Item> findAllByRequestId(long requestId);
 }

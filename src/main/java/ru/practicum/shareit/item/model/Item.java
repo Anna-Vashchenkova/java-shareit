@@ -12,6 +12,8 @@ import javax.persistence.*;
 @AllArgsConstructor
 @Getter
 @Setter
+@Builder
+@EqualsAndHashCode
 public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,4 +31,5 @@ public class Item {
     @ManyToOne
     @JoinColumn(name = "request_id")
     private ItemRequest request;
+
 }

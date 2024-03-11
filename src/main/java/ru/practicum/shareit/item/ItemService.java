@@ -5,9 +5,11 @@ import ru.practicum.shareit.item.model.Item;
 import java.util.List;
 
 public interface ItemService {
-    List<Item> getItems(Long userId);
+    List<Item> getItems(Long userId, int from, int size);
 
-    Item addNewItem(Long userId, String name, String description, Boolean available);
+    List<Item> getAllItems(Long userId);
+
+    Item addNewItem(Long userId, String name, String description, Boolean available, Long requestId);
 
     void deleteItem(Long userId, Long itemId);
 
@@ -17,7 +19,9 @@ public interface ItemService {
 
     List<Item> findItemsByOwnerId(Long userId);
 
-    List<Item> searchItem(String text);
+    List<Item> searchItem(String text, int from, int size);
 
     boolean userIsOwnerOfItem(long userId, Long itemId);
+
+    List<Item> findItemsByRequestId(long requestId);
 }

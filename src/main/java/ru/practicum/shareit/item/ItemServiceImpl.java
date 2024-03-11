@@ -2,10 +2,14 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.exception.DataNotFoundException;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
+import ru.practicum.shareit.request.ItemRequestService;
 import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.model.User;
 
@@ -19,14 +23,21 @@ import java.util.Objects;
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository repository;
     private final UserService userService;
+    private final ItemRequestService itemRequestService;
 
     @Override
-    public List<Item> getItems(Long userId) {
+    public List<Item> getItems(Long userId, int from, int size) {
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        return repository.findAllByUserIdPage(userId, PageRequest.of(from, size, sortById)).getContent();
+    }
+
+    @Override
+    public List<Item> getAllItems(Long userId) {
         return repository.findAllByUserId(userId);
     }
 
     @Override
-    public Item addNewItem(Long userId, String name, String description, Boolean available) {
+    public Item addNewItem(Long userId, String name, String description, Boolean available, Long requestId) {
         User user = userService.getUserById(userId);
         Status status;
         if (available) {
@@ -40,7 +51,7 @@ public class ItemServiceImpl implements ItemService {
                 description,
                 status,
                 user,
-                null
+                requestId != null ? itemRequestService.getRequestById(userId, requestId) : null
         ));
     }
 
@@ -97,11 +108,12 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> searchItem(String text) {
+    public List<Item> searchItem(String text, int from, int size) {
         if (text.isEmpty()) {
             return Collections.emptyList();
         }
-        return repository.searchItem(text);
+        Sort sortById = Sort.by(Sort.Direction.ASC, "id");
+        return repository.searchItem(text, PageRequest.of(from, size, sortById)).getContent();
     }
 
     @Override
@@ -110,5 +122,11 @@ public class ItemServiceImpl implements ItemService {
             return true;
         }
         return false;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Item> findItemsByRequestId(long requestId) {
+        return repository.findAllByRequestId(requestId);
     }
 }

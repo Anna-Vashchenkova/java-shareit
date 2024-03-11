@@ -12,9 +12,9 @@ public interface BookingService {
 
     Booking getBookingById(Long userId, long bookingId);
 
-    List<Booking> getBookings(Long userId, SearchStatus state);
+    List<Booking> getBookings(Long userId, SearchStatus state, int from, int size);
 
-    List<Booking> getBookingsByOwner(Long userId, SearchStatus state);
+    List<Booking> getBookingsByOwner(Long userId, SearchStatus state, int from, int size);
 
     List<Booking> getBookingsForUser(Long itemId);
 }

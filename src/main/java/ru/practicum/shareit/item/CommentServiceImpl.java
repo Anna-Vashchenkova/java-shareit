@@ -3,7 +3,6 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
 import ru.practicum.shareit.booking.dto.SearchStatus;
 import ru.practicum.shareit.exception.DataNotFoundException;
@@ -39,7 +38,7 @@ public class CommentServiceImpl implements CommentService {
     public Comment addComment(Long userId, long itemId, String text) {
         User user = userService.getUserById(userId);
         if (user == null) {
-            throw new DataNotFoundException("Владелец вещи не найден");
+            throw new DataNotFoundException("Пользователь не найден");
         }
         if ((text == null) || (text.isBlank())) {
             throw new DataNotFoundException("Текст комментария не может быть пустым");
@@ -48,7 +47,7 @@ public class CommentServiceImpl implements CommentService {
         if (item == null) {
             throw new DataNotFoundException("Вещь с таким id не найдена");
         }
-        Booking booking = bookingService.getBookings(userId, SearchStatus.PAST)
+        bookingService.getBookings(userId, SearchStatus.PAST,0,10)
                 .stream()
                 .filter(b -> b.getItem().getId() == itemId)
                 .findAny().orElseThrow(() -> new ValidationException("Бронь не найдена"));

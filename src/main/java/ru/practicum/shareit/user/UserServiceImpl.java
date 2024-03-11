@@ -33,9 +33,6 @@ public class UserServiceImpl implements UserService {
         }
         User userUpdate = repository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Пользователь с ID=" + userId + " не найден!"));
-        if (userUpdate == null) {
-            throw new DataNotFoundException("Пользователь не найден.");
-        }
         if (user.getName() != null) {
             userUpdate.setName(user.getName());
         }
