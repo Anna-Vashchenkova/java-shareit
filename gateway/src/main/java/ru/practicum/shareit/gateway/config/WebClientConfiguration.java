@@ -39,7 +39,7 @@ public class WebClientConfiguration {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<String> other(Exception exception){
+    public ResponseEntity<String> other(Exception exception) {
         return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT.value()).build();
     }
 
