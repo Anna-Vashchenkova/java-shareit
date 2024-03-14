@@ -91,12 +91,16 @@ public class ItemController {
         return response.block();
     }
 
-    /*@DeleteMapping("/{itemId}")
+    @DeleteMapping("/{itemId}")
     public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
                            @PathVariable long itemId) {
         log.info("Получен запрос на удаление итема '{}' пользователя '{}'",itemId, userId);
-        itemService.deleteItem(userId, itemId);
-    }*/
+        webClient.delete()
+                .uri("/items/{itemId}", itemId)
+                .retrieve()
+                .bodyToMono(Void.class)
+                .block();
+    }
 
     /*@GetMapping("/search")
     public List<ItemOutcomeDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
@@ -112,9 +116,19 @@ public class ItemController {
                 .collect(Collectors.toList());
     }*/
 
-    /*@PostMapping("/{itemId}/comment")
+    @PostMapping("/{itemId}/comment")
     public ItemOutcomeInfoDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
                                                     @Valid @RequestBody ItemOutcomeInfoDto.CommentDto dto) {
-        return CommentMapper.toCommentDto(commentService.addComment(userId, itemId, dto.getText()));
-    }*/
+        Mono<ItemOutcomeInfoDto.CommentDto> response = webClient.post()
+                .uri("/items/{itemId}/comment", itemId)
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
+                .bodyToMono(ItemOutcomeInfoDto.CommentDto.class);
+        return response.block();
+
+    }
 }
