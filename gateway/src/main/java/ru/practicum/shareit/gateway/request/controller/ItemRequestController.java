@@ -76,15 +76,18 @@ public class ItemRequestController {
         return response.block();
     }
 
-    /*@GetMapping("/{requestId}")
-    public ItemRequestInfoDto getRequestById(@RequestHeader("X-Sharer-User-Id") long userId,
+    @GetMapping("/{requestId}")
+    public ItemRequestInfoDto getRequestById(@RequestHeader("X-Sharer-User-Id") String userId,
                                              @PathVariable("requestId") Long requestId) {
         log.info("Получен запрос от пользователя '{}' - показать запрос '{}'", userId, requestId);
-        List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(requestId).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
-        return ItemRequestMapper.toItemRequestDto2(itemRequestService.getRequestById(userId, requestId), itemsDto);
-    }*/
+        Mono<ItemRequestInfoDto> response = webClient.get()
+                .uri("/requests/{requestId}", requestId)
+                .header("X-Sharer-User-Id", userId)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<ItemRequestInfoDto>() {
+                });
+        return response.block();
+    }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<String> onBadRequest(ValidationException exception){
