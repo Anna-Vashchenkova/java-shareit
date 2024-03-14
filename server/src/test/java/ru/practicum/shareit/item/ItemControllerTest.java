@@ -10,7 +10,6 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.ItemIncomeDto;
 import ru.practicum.shareit.item.dto.ItemOutcomeDto;
 import ru.practicum.shareit.item.dto.ItemOutcomeInfoDto;
@@ -49,18 +48,6 @@ class ItemControllerTest {
             item1,
             validUser2,
             ru.practicum.shareit.booking.Status.APPROVED);
-
-    @Test
-    @DisplayName("При значении параметров from < 0, size < 1 вернуть ошибку")
-    void get_whenRequestParamIsNotValid_thenReturnValidationException() {
-        int from = -1;
-        int size = 0;
-
-        ValidationException exception = Assertions.assertThrows(ValidationException.class,
-                () -> itemController.get(1L, from, size));
-
-        Assertions.assertEquals("Неверные параметры запроса", exception.getMessage());
-    }
 
     @Test
     @DisplayName("При запросе вызывается сервис и возвращается ItemOutcomeDto")
@@ -129,19 +116,6 @@ class ItemControllerTest {
         itemController.deleteItem(1L, 1L);
 
         verify(itemService).deleteItem(1L, 1L);
-    }
-
-    @Test
-    @DisplayName("При значении параметров from < 0, size < 1 вернуть ошибку")
-    void searchItem_whenRequestParamIsNotValid_thenReturnValidationException() {
-        int from = -1;
-        int size = 0;
-        String text = "search";
-
-        ValidationException exception = Assertions.assertThrows(ValidationException.class,
-                () -> itemController.searchItem(1L, text, from, size));
-
-        Assertions.assertEquals("Неверные параметры запроса", exception.getMessage());
     }
 
     @Test

@@ -8,7 +8,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemOutcomeDto;
 import ru.practicum.shareit.item.model.Item;
@@ -104,18 +103,6 @@ class ItemRequestControllerTest {
         List<ItemRequestInfoDto> allRequests = itemRequestController.getAllRequests(1L, 0, 10);
 
         Assertions.assertEquals(2, allRequests.size());
-    }
-
-    @Test
-    @DisplayName("Выбрасывается ошибка при запросе с параметрами from < 0 и size < 1")
-    void getAllRequests_whenFromLess0AndSizeLess1_thenValidationException() {
-        int from = -1;
-        int size = 0;
-
-        final ValidationException exception = Assertions.assertThrows(ValidationException.class,
-                () -> itemRequestController.getAllRequests(1L, from, size));
-
-        Assertions.assertEquals("Неверные параметры запроса", exception.getMessage());
     }
 
     @Test

@@ -234,26 +234,6 @@ class ItemControllerMvcTest {
     }
 
     @Test
-    @DisplayName("При запросе с невалидными параметрами from < 0, size < 1 возвращается ошибка")
-    void searchItem_whenRequestParamIsNotValid_thenReturnValidationException() throws Exception {
-        String text = "перфоратор";
-        List<Item> items = new ArrayList<>();
-        items.add(item1);
-        items.add(item2);
-
-        Mockito.when(this.itemService.searchItem(eq(text), anyInt(), anyInt()))
-                .thenThrow(new ValidationException("Неверные параметры запроса"));
-
-        mvc.perform(get("/items/search")
-                        .header("X-Sharer-User-Id", 1)
-                        .param("text", "перфоратор")
-                        .param("from", "-1")
-                        .param("size", "0")
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().is(400));
-    }
-
-    @Test
     @DisplayName("При запросе возвращается CommentDto")
     void addComment_shouldReturnCommentDto() throws Exception {
         Comment comment1 = new Comment(1L, "super", item1, validUser2, created2);
