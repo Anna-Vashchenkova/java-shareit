@@ -63,12 +63,19 @@ public class BookingController {
         return response.block();
     }
 
-    /*@GetMapping("/{bookingId}")
+    @GetMapping("/{bookingId}")
     public BookingOutcomeDto getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @PathVariable("bookingId") long bookingId) {
         log.info("Получен запрос на получение информации о бронировании с ID={}", bookingId);
-        return BookingMapper.toBookingDto(bookingService.getBookingById(userId, bookingId));
-    }*/
+        Mono<BookingOutcomeDto> response = webClient.get()
+                .uri("/bookings/{bookingId}", bookingId)
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
+                .bodyToMono(BookingOutcomeDto.class);
+        return response.block();
+    }
 
     /*@GetMapping()
     public List<BookingOutcomeDto> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
