@@ -77,24 +77,19 @@ public class ItemController {
         return response.block();
     }
 
-    /*@GetMapping("/{itemId}")
+    @GetMapping("/{itemId}")
     public ItemOutcomeInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @PathVariable("itemId") Long itemId) {
         log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
-        Item item = itemService.getItemById(userId, itemId);
-        List<ItemOutcomeInfoDto.CommentDto> commentsDto = commentService.getComments(item.getId()).stream()
-                .map(CommentMapper::toCommentDto)
-                .collect(Collectors.toList());;
-        if (itemService.userIsOwnerOfItem(userId, itemId)) {
-            List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
-
-            ItemOutcomeInfoDto itemDto = ItemMapper.toItemInfoDto(item, bookings, commentsDto);
-            return itemDto;
-        } else {
-            return ItemMapper.toItemDto2(item, commentsDto);
-        }
-
-    }*/
+        Mono<ItemOutcomeInfoDto> response = webClient.get()
+                .uri("/items/{itemId}", itemId)
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
+                .bodyToMono(ItemOutcomeInfoDto.class);
+        return response.block();
+    }
 
     /*@DeleteMapping("/{itemId}")
     public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
