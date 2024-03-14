@@ -17,9 +17,6 @@ import ru.practicum.shareit.user.model.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 @ActiveProfiles("test")
 @DataJpaTest
 @RequiredArgsConstructor(onConstructor = @__(@Autowired))
@@ -91,7 +88,7 @@ class ItemRepositoryTest {
                 .build();
     }
 
-    @Test
+    /*@Test
     @Disabled
     @DisplayName("Удаление итема по userId и itemId")
     void deleteByUserIdAndItemId() {
@@ -112,7 +109,7 @@ class ItemRepositoryTest {
                 () -> assertTrue(items.size() == result.size()),
                 () -> assertTrue(items.containsAll(result))
         );
-    }
+    }*/
 
     @Test
     @DisplayName("Вернуть итем при поиске по описанию")
