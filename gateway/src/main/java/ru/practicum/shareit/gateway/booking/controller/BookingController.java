@@ -60,8 +60,10 @@ public class BookingController {
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
+                        clientResponse -> Mono.error(new ValidationException("Невалидные данные запроса")))
                 .bodyToMono(BookingOutcomeDto.class);
         return response.block();
     }
@@ -109,7 +111,8 @@ public class BookingController {
                 });
             return response.block();
     }
-    /*@GetMapping("/owner")
+
+    @GetMapping("/owner")
     public List<BookingOutcomeDto> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam,
                                                       @RequestParam(name = "from", defaultValue = "0") int from,
@@ -125,6 +128,17 @@ public class BookingController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return bookingService.getBookingsByOwner(userId, state, from / size, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-    }*/
+        Mono<List<BookingOutcomeDto>> response = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/bookings/owner")
+                        .queryParam("state", stateParam)
+                        .queryParam("from", from)
+                        .queryParam("size", size).build())
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
+                .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
+                });
+        return response.block();
+    }
 }
