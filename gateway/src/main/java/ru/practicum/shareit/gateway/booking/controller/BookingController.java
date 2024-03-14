@@ -12,15 +12,8 @@ import ru.practicum.shareit.gateway.booking.controller.dto.BookingIncomeDto;
 import ru.practicum.shareit.gateway.booking.controller.dto.BookingOutcomeDto;
 import ru.practicum.shareit.gateway.exception.DataNotFoundException;
 import ru.practicum.shareit.gateway.exception.ValidationException;
-/*import ru.practicum.shareit.gateway.booking.dto.BookingIncomeDto;
-import ru.practicum.shareit.gateway.booking.dto.BookingOutcomeDto;
-import ru.practicum.shareit.gateway.booking.dto.BookingMapper;
-import ru.practicum.shareit.gateway.booking.dto.SearchStatus;
-import ru.practicum.shareit.exception.ValidationException;*/
 
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -48,13 +41,27 @@ public class BookingController {
         return response.block();
     }
 
-    /*@PatchMapping("/{bookingId}")
+    @PatchMapping("/{bookingId}")
     public BookingOutcomeDto approveBooking(@PathVariable("bookingId") long bookingId,
                                            @RequestHeader("X-Sharer-User-Id") Long userId,
                                            @RequestParam Boolean approved) {
         log.info("Получен запрос на обновление статуса бронирования с ID={}", bookingId);
-        return BookingMapper.toBookingDto(bookingService.updateBooking(bookingId, userId, approved));
-    }*/
+        if (approved == null) {
+            throw new ValidationException("Неверные параметры запроса");
+        }
+        Mono<BookingOutcomeDto> response = webClient.patch()
+                .uri(uriBuilder -> uriBuilder
+                        .pathSegment("bookings", "{bookingId}")
+                        .queryParam("approved", approved)
+                        .build(bookingId))
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
+                .bodyToMono(BookingOutcomeDto.class);
+        return response.block();
+    }
 
     /*@GetMapping("/{bookingId}")
     public BookingOutcomeDto getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId,
