@@ -15,6 +15,7 @@ import ru.practicum.shareit.booking.dto.BookingIncomeDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingOutcomeDto;
 import ru.practicum.shareit.booking.dto.SearchStatus;
+import ru.practicum.shareit.item.dto.ItemOutcomeDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.request.ItemRequest;
@@ -49,6 +50,8 @@ class BookingControllerMvcTest {
     private ItemRequest request2;
     private Item item1;
     private Item item2;
+    private ItemOutcomeDto item1OutcomeDto;
+    private ItemOutcomeDto item2OutcomeDto;
     private Booking booking1;
     private Booking booking2;
     private BookingIncomeDto bookingIncomeDto;
@@ -68,11 +71,15 @@ class BookingControllerMvcTest {
         request2 = new ItemRequest(2L, "request2", booker, created);
         item1 = new Item(1L, "item1", "description1", Status.AVAILABLE, owner, request1);
         item2 = new Item(2L, "item2", "description2", Status.UNAVAILABLE, owner, request2);
+        item1OutcomeDto = new ItemOutcomeDto(1L, item1.getName(), item1.getDescription(),
+                true, ownerDto, request1.getId());
+        item2OutcomeDto = new ItemOutcomeDto(2L, item2.getName(), item2.getDescription(),
+                true, ownerDto, request2.getId());
         booking1 = new Booking(1L, start, end, item1, booker, ru.practicum.shareit.booking.Status.WAITING);
         booking2 = new Booking(2L, start, end, item2, booker, ru.practicum.shareit.booking.Status.WAITING);
         bookingIncomeDto = new BookingIncomeDto(1L, start, end, 1L);
-        bookingOutcomeDto = new BookingOutcomeDto(1L, start, end, item1, booker, booking1.getStatus().name());
-        bookingOutcomeDto2 = new BookingOutcomeDto(2L, start, end, item2, booker, booking2.getStatus().name());
+        bookingOutcomeDto = new BookingOutcomeDto(1L, start, end, item1OutcomeDto, bookerDto, booking1.getStatus().name());
+        bookingOutcomeDto2 = new BookingOutcomeDto(2L, start, end, item2OutcomeDto, bookerDto, booking2.getStatus().name());
     }
 
     @Test
@@ -162,6 +169,7 @@ class BookingControllerMvcTest {
     @Test
     @DisplayName("Получение списка бронирований по ownerId")
     void getBookingsByOwner() throws Exception {
+        item2.setAvailable(Status.AVAILABLE);
         List<BookingOutcomeDto> dtoList = List.of(bookingOutcomeDto, bookingOutcomeDto2);
         List<Booking> bookings = List.of(booking1, booking2);
         Mockito.when(bookingService.getBookingsByOwner(1L, SearchStatus.ALL, 0, 10)).thenReturn(bookings);

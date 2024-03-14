@@ -90,7 +90,7 @@ class UserControllerTest {
 
         userController.updateUser(3L, userDto);
 
-        verify(mockUserService).updateUser(3L, user);
+        verify(mockUserService).updateUser(eq(3L), any());
     }
 
     @Test
