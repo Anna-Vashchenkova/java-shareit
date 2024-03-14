@@ -102,7 +102,7 @@ public class ItemController {
                 .block();
     }
 
-    /*@GetMapping("/search")
+    @GetMapping("/search")
     public List<ItemOutcomeDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @RequestParam String text,
                                            @RequestParam(name = "from", defaultValue = "0") int from,
@@ -111,10 +111,19 @@ public class ItemController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return itemService.searchItem(text, from / size, size).stream()
-                .map(ItemMapper::toItemDto)
-                .collect(Collectors.toList());
-    }*/
+        Mono<List<ItemOutcomeDto>> response = webClient.get()
+                .uri(uriBuilder ->
+                        uriBuilder.path("/items/search")
+                                .queryParam("text", text)
+                                .queryParam("from", from)
+                                .queryParam("size", size)
+                                .build())
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ItemOutcomeDto>>() {
+                });
+        return response.block();
+    }
 
     @PostMapping("/{itemId}/comment")
     public ItemOutcomeInfoDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
@@ -129,6 +138,5 @@ public class ItemController {
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeInfoDto.CommentDto.class);
         return response.block();
-
     }
 }
