@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Configuration
 public class WebClientConfiguration {
     @Value("${shareit-server.url}")
-    private String BASE_URL;
+    private String baseUrl;
     public static final int TIMEOUT = 1000;
 
     @Bean
@@ -33,7 +33,7 @@ public class WebClientConfiguration {
                 });
 
         return WebClient.builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
     }
