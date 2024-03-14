@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.Booking;
 import ru.practicum.shareit.booking.BookingService;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Comment;
 import ru.practicum.shareit.item.model.Item;
@@ -28,9 +27,6 @@ public class ItemController {
                                         @RequestParam(name = "from", defaultValue = "0") int from,
                                         @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос - показать список вещей пользователя '{}' по {} элементов на странице {}", userId, size, from);
-        if ((from < 0) || (size < 1)) {
-            throw new ValidationException("Неверные параметры запроса");
-        }
         return itemService.getItems(userId, from / size, size).stream()
 
                 .map(item -> {
@@ -103,9 +99,6 @@ public class ItemController {
                                            @RequestParam(name = "from", defaultValue = "0") int from,
                                            @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на поиск итема по содержанию текста '{}' у пользователя '{}', {} элементов на {} странице",text, userId, size, from);
-        if ((from < 0) || (size < 1)) {
-            throw new ValidationException("Неверные параметры запроса");
-        }
         return itemService.searchItem(text, from / size, size).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());

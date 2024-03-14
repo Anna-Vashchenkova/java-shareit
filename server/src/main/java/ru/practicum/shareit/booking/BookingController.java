@@ -60,9 +60,6 @@ public class BookingController {
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
-        if ((from < 0) || (size < 1)) {
-            throw new ValidationException("Неверные параметры запроса");
-        }
         return bookingService.getBookings(userId, state, from / size, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }
 
@@ -78,9 +75,6 @@ public class BookingController {
             state = SearchStatus.valueOf(stateParam);
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
-        }
-        if ((from < 0) || (size < 1)) {
-            throw new ValidationException("Неверные параметры запроса");
         }
         return bookingService.getBookingsByOwner(userId, state, from / size, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
     }

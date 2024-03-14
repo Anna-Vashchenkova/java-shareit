@@ -3,7 +3,6 @@ package ru.practicum.shareit.request;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exception.ValidationException;
 import ru.practicum.shareit.item.ItemService;
 import ru.practicum.shareit.item.dto.ItemMapper;
 import ru.practicum.shareit.item.dto.ItemOutcomeDto;
@@ -49,9 +48,6 @@ public class ItemRequestController {
                                                    @RequestParam(name = "from", defaultValue = "0") int from,
                                                    @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос от пользователя '{}'- показать {} запросов других пользователей на {} странице ", userId, size, from);
-        if ((from < 0) || (size < 1)) {
-            throw new ValidationException("Неверные параметры запроса");
-        }
         return itemRequestService.getAllRequests(userId, from / size, size).stream()
                 .map(r -> {
                     List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(r.getId()).stream()
