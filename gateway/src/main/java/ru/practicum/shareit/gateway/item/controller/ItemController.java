@@ -2,12 +2,20 @@ package ru.practicum.shareit.gateway.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import ru.practicum.shareit.gateway.exception.DataNotFoundException;
+import ru.practicum.shareit.gateway.exception.ValidationException;
+import ru.practicum.shareit.gateway.item.controller.dto.ItemIncomeDto;
+import ru.practicum.shareit.gateway.item.controller.dto.ItemOutcomeDto;
+import ru.practicum.shareit.gateway.item.controller.dto.ItemOutcomeInfoDto;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -15,9 +23,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Validated
 public class ItemController {
-    /*private final ItemService itemService;
-    private final BookingService bookingService;
-    private final CommentService commentService;
+    private final WebClient webClient;
 
     @GetMapping
     public List<ItemOutcomeInfoDto> get(@RequestHeader("X-Sharer-User-Id") Long userId,
@@ -27,33 +33,34 @@ public class ItemController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return itemService.getItems(userId, from / size, size).stream()
-
-                .map(item -> {
-                            List<Booking> bookings = bookingService.getBookingsForUser(item.getId());
-                            List<Comment> comments = commentService.getComments(item.getId());
-                            List<ItemOutcomeInfoDto.CommentDto> commentsDto = comments.stream()
-                                    .map(CommentMapper::toCommentDto)
-                                    .collect(Collectors.toList());
-                            return ItemMapper.toItemInfoDto(item, bookings, commentsDto);
-                        })
-                .collect(Collectors.toList());
+        Mono<List<ItemOutcomeInfoDto>> response = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/items")
+                        .queryParam("from", from)
+                        .queryParam("size", size).build())
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ItemOutcomeInfoDto>>() {
+                });
+        return response.block();
     }
 
     @PostMapping
     public ItemOutcomeDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
-                            @Valid @RequestBody ItemIncomeDto dto) {
+                              @Valid @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на добавление итема '{}' пользователю '{}'", dto, userId);
-        return ItemMapper.toItemDto(itemService.addNewItem(
-                userId,
-                dto.getName(),
-                dto.getDescription(),
-                dto.getAvailable(),
-                dto.getRequestId()
-        ));
+        Mono<ItemOutcomeDto> response = webClient.post()
+                .uri("/items")
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Пользователь не найден")))
+                .bodyToMono(ItemOutcomeDto.class);
+        return response.block();
     }
 
-    @PatchMapping("/{itemId}")
+    /*@PatchMapping("/{itemId}")
     public ItemOutcomeDto updateItem(@PathVariable("itemId") long itemId,
                                     @RequestHeader("X-Sharer-User-Id") Long userId,
                                     @RequestBody ItemIncomeDto dto) {
@@ -65,9 +72,9 @@ public class ItemController {
                 dto.getDescription(),
                 dto.getAvailable()
         ));
-    }
+    }*/
 
-    @GetMapping("/{itemId}")
+    /*@GetMapping("/{itemId}")
     public ItemOutcomeInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @PathVariable("itemId") Long itemId) {
         log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
@@ -84,16 +91,16 @@ public class ItemController {
             return ItemMapper.toItemDto2(item, commentsDto);
         }
 
-    }
+    }*/
 
-    @DeleteMapping("/{itemId}")
+    /*@DeleteMapping("/{itemId}")
     public void deleteItem(@RequestHeader("X-Sharer-User-Id") long userId,
                            @PathVariable long itemId) {
         log.info("Получен запрос на удаление итема '{}' пользователя '{}'",itemId, userId);
         itemService.deleteItem(userId, itemId);
-    }
+    }*/
 
-    @GetMapping("/search")
+    /*@GetMapping("/search")
     public List<ItemOutcomeDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @RequestParam String text,
                                            @RequestParam(name = "from", defaultValue = "0") int from,
@@ -105,9 +112,9 @@ public class ItemController {
         return itemService.searchItem(text, from / size, size).stream()
                 .map(ItemMapper::toItemDto)
                 .collect(Collectors.toList());
-    }
+    }*/
 
-    @PostMapping("/{itemId}/comment")
+    /*@PostMapping("/{itemId}/comment")
     public ItemOutcomeInfoDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
                                                     @Valid @RequestBody ItemOutcomeInfoDto.CommentDto dto) {
         return CommentMapper.toCommentDto(commentService.addComment(userId, itemId, dto.getText()));
