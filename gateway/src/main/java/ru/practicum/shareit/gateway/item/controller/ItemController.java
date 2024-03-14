@@ -55,24 +55,27 @@ public class ItemController {
                 .bodyValue(dto)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
-                        clientResponse -> Mono.error(new DataNotFoundException("Пользователь не найден")))
+                        clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeDto.class);
         return response.block();
     }
 
-    /*@PatchMapping("/{itemId}")
+    @PatchMapping("/{itemId}")
     public ItemOutcomeDto updateItem(@PathVariable("itemId") long itemId,
                                     @RequestHeader("X-Sharer-User-Id") Long userId,
                                     @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на обновление данных итема '{}' у пользователя '{}'",itemId, userId);
-        return ItemMapper.toItemDto(itemService.updateItem(
-                userId,
-                itemId,
-                dto.getName(),
-                dto.getDescription(),
-                dto.getAvailable()
-        ));
-    }*/
+        Mono<ItemOutcomeDto> response = webClient.patch()
+                .uri("/items/{itemId}", itemId)
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
+                .bodyToMono(ItemOutcomeDto.class);
+        return response.block();
+    }
 
     /*@GetMapping("/{itemId}")
     public ItemOutcomeInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
