@@ -2,6 +2,7 @@ package ru.practicum.shareit.gateway.booking.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -10,10 +11,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 import ru.practicum.shareit.gateway.booking.controller.dto.BookingIncomeDto;
 import ru.practicum.shareit.gateway.booking.controller.dto.BookingOutcomeDto;
+import ru.practicum.shareit.gateway.booking.controller.dto.SearchStatus;
 import ru.practicum.shareit.gateway.exception.DataNotFoundException;
 import ru.practicum.shareit.gateway.exception.ValidationException;
 
 import javax.validation.Valid;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -77,13 +80,13 @@ public class BookingController {
         return response.block();
     }
 
-    /*@GetMapping()
+    @GetMapping()
     public List<BookingOutcomeDto> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam,
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на получение " +
-                "{} бронирований на странице {} пользователя с ID={} с параметром STATE={}",size, from, userId, stateParam);
+                "{} бронирований на странице {} пользователя с ID={} с параметром STATE={}", size, from, userId, stateParam);
         SearchStatus state;
         try {
             state = SearchStatus.valueOf(stateParam);
@@ -93,9 +96,19 @@ public class BookingController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return bookingService.getBookings(userId, state, from / size, size).stream().map(BookingMapper::toBookingDto).collect(Collectors.toList());
-    }*/
-
+        Mono<List<BookingOutcomeDto>> response = webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/bookings")
+                        .queryParam("state", stateParam)
+                        .queryParam("from", from)
+                        .queryParam("size", size).build())
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
+                .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
+                });
+            return response.block();
+    }
     /*@GetMapping("/owner")
     public List<BookingOutcomeDto> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam,
