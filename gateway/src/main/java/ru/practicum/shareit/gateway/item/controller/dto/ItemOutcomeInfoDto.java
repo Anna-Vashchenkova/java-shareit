@@ -3,7 +3,7 @@ package ru.practicum.shareit.gateway.item.controller.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-//import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.gateway.user.controller.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -12,6 +12,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemOutcomeInfoDto {
     private Long id;
     @NotBlank(message = "Название вещи не должно быть пустым")
@@ -20,7 +21,7 @@ public class ItemOutcomeInfoDto {
     private String description;
     @NotNull
     private Boolean available;
-    //private UserDto owner;
+    private UserDto owner;
     private Long requestId;
     private BookingDto lastBooking;
     private BookingDto nextBooking;

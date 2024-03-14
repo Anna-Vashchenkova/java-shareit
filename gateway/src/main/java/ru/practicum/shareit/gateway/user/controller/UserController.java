@@ -4,9 +4,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
+import ru.practicum.shareit.gateway.exception.DataNotFoundException;
 import ru.practicum.shareit.gateway.user.controller.dto.UserDto;
 
 import javax.validation.Valid;
@@ -16,9 +18,9 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/users")
+@Validated
 public class UserController {
     private final WebClient webClient;
-    //private final UserService userService;
 
     @GetMapping
     public List<UserDto> getAllUsers() {
@@ -28,9 +30,6 @@ public class UserController {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<UserDto>>() {});
         return response.block();
-        /*return userService.getAllUsers().stream()
-                .map(UserMapper::toUserDto)
-                .collect(Collectors.toList());*/
     }
 
     @PostMapping
@@ -43,11 +42,6 @@ public class UserController {
                 .retrieve()
                 .bodyToMono(UserDto.class);
         return userDtoMono.block();
-        /*return UserMapper.toUserDto(userService.saveUser(
-                dto.getId(),
-                dto.getEmail(),
-                dto.getName()
-                ));*/
     }
 
     @PatchMapping("/{userId}")
@@ -63,7 +57,6 @@ public class UserController {
                 .retrieve()
                 .bodyToMono(UserDto.class);
         return userDtoMono.block();
-        // return UserMapper.toUserDto(userService.updateUser(userId, UserMapper.toUser(dto)));
     }
 
     @GetMapping("/{userId}")
@@ -72,9 +65,10 @@ public class UserController {
         Mono<UserDto> userDtoMono = webClient.get()
                 .uri("/users/{userId}", userId)
                 .retrieve()
+                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                        clientResponse -> Mono.error(new DataNotFoundException("Пользователь не найден")))
                 .bodyToMono(UserDto.class);
         return userDtoMono.block();
-        //return UserMapper.toUserDto(userService.getUserById(userId));
     }
 
     @DeleteMapping("/{userId}")
@@ -83,8 +77,6 @@ public class UserController {
         webClient.delete()
                 .uri("/users/{userId}", userId)
                 .retrieve()
-                .toBodilessEntity();
-
-         //userService.deleteUserById(userId);
+                .bodyToMono(Void.class).block();
     }
 }

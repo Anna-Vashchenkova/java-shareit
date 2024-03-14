@@ -2,6 +2,7 @@ package ru.practicum.shareit.gateway.item.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -12,6 +13,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/items")
 @RequiredArgsConstructor
+@Validated
 public class ItemController {
     /*private final ItemService itemService;
     private final BookingService bookingService;

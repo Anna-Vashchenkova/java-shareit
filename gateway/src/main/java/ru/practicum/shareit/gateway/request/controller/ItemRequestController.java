@@ -2,59 +2,79 @@ package ru.practicum.shareit.gateway.request.controller;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
+import ru.practicum.shareit.gateway.exception.DataNotFoundException;
+import ru.practicum.shareit.gateway.exception.ValidationException;
+import ru.practicum.shareit.gateway.request.controller.dto.ItemRequestDto;
+import ru.practicum.shareit.gateway.request.controller.dto.ItemRequestIncomeDto;
+import ru.practicum.shareit.gateway.request.controller.dto.ItemRequestInfoDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/requests")
+@Validated
 public class ItemRequestController {
     private final WebClient webClient;
-    //private final ItemRequestService itemRequestService;
-    //private final ItemService itemService;
 
-    /*@PostMapping
-    public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") Long userId,
+    @PostMapping
+    public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") String userId,
                                      @Valid @RequestBody ItemRequestIncomeDto dto) {
         log.info("Получен запрос на добавление запроса '{}' пользователю '{}'", dto, userId);
-        return ItemRequestMapper.toItemRequestDto(itemRequestService.addNewRequest(userId, dto.getDescription()));
-    }*/
+        Mono<ItemRequestDto> itemRequestDtoMono = webClient.post()
+                .uri("/requests")
+                .header("X-Sharer-User-Id", userId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(dto)
+                .retrieve()
+                .bodyToMono(ItemRequestDto.class);
+        return itemRequestDtoMono.block();
+    }
 
-    /*@GetMapping
-    public List<ItemRequestInfoDto> getRequests(@RequestHeader("X-Sharer-User-Id") Long userId) {
+    @GetMapping
+    public List<ItemRequestInfoDto> getRequests(@RequestHeader("X-Sharer-User-Id") String userId) {
         log.info("Получен запрос - показать список запросов пользователя '{}'", userId);
-        return itemRequestService.getRequests(userId).stream()
-                .map(r -> {
-                            List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(r.getId()).stream()
-                                    .map(ItemMapper::toItemDto)
-                                    .collect(Collectors.toList());
-                            return ItemRequestMapper.toItemRequestDto2(r, itemsDto);
-                        })
-                .collect(Collectors.toList());
-    }*/
+        Mono<List<ItemRequestInfoDto>> response = webClient.get()
+                .uri("/requests")
+                .header("X-Sharer-User-Id", userId)
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ItemRequestInfoDto>>() {
+                });
+        return response.block();
+    }
 
-    /*@GetMapping("/all")
+    @GetMapping("/all")
     public List<ItemRequestInfoDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                                   @RequestParam(name = "from", defaultValue = "0") int from,
-                                                   @RequestParam(name = "size", defaultValue = "10") int size) {
+                                                   @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
+                                                   @Positive @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос от пользователя '{}'- показать {} запросов других пользователей на {} странице ", userId, size, from);
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        return itemRequestService.getAllRequests(userId, from / size, size).stream()
-                .map(r -> {
-                    List<ItemOutcomeDto> itemsDto = itemService.findItemsByRequestId(r.getId()).stream()
-                            .map(ItemMapper::toItemDto)
-                            .collect(Collectors.toList());
-                    return ItemRequestMapper.toItemRequestDto2(r, itemsDto);
-                })
-                .collect(Collectors.toList());
-    }*/
+        Mono<List<ItemRequestInfoDto>> response = webClient.get()
+                .uri(uriBuilder ->
+                    uriBuilder.path("/requests/all")
+                            .queryParam("from", "0")
+                            .queryParam("size", "10")
+                            .build())
+                .header("X-Sharer-User-Id", String.valueOf(userId))
+                .retrieve()
+                .bodyToMono(new ParameterizedTypeReference<List<ItemRequestInfoDto>>() {
+                });
+        return response.block();
+    }
 
     /*@GetMapping("/{requestId}")
     public ItemRequestInfoDto getRequestById(@RequestHeader("X-Sharer-User-Id") long userId,
@@ -65,4 +85,14 @@ public class ItemRequestController {
                 .collect(Collectors.toList());
         return ItemRequestMapper.toItemRequestDto2(itemRequestService.getRequestById(userId, requestId), itemsDto);
     }*/
+
+    @ExceptionHandler(ValidationException.class)
+    public ResponseEntity<String> onBadRequest(ValidationException exception){
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
+    }
+
+    @ExceptionHandler(DataNotFoundException.class)
+    public ResponseEntity<String> onNotFound(DataNotFoundException exception){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
+    }
 }

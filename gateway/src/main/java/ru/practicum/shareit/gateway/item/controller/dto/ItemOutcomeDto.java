@@ -2,15 +2,17 @@ package ru.practicum.shareit.gateway.item.controller.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-//import ru.practicum.shareit.user.dto.UserDto;
+import lombok.NoArgsConstructor;
+import ru.practicum.shareit.gateway.user.controller.dto.UserDto;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class ItemOutcomeDto {
-   /* private Long id;
+    private Long id;
     @NotBlank(message = "Название вещи не должно быть пустым")
     private String name;
     @NotBlank(message = "Описание вещи не должно быть пустым")
@@ -18,5 +20,5 @@ public class ItemOutcomeDto {
     @NotNull
     private Boolean available;
     private UserDto owner;
-    private Long requestId;*/
+    private Long requestId;
 }

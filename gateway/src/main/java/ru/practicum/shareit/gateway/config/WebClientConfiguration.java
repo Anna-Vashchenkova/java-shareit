@@ -5,7 +5,10 @@ import io.netty.handler.timeout.ReadTimeoutHandler;
 import io.netty.handler.timeout.WriteTimeoutHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
@@ -14,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 
 @Configuration
 public class WebClientConfiguration {
-    private static final String BASE_URL = "http://localhost:8080/";
+    private static final String BASE_URL = "http://localhost:7070/";
     public static final int TIMEOUT = 1000;
 
     @Bean
@@ -32,4 +35,10 @@ public class WebClientConfiguration {
                 .clientConnector(new ReactorClientHttpConnector(HttpClient.from(tcpClient)))
                 .build();
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> other(Exception exception){
+        return ResponseEntity.status(HttpStatus.I_AM_A_TEAPOT.value()).build();
+    }
+
 }
