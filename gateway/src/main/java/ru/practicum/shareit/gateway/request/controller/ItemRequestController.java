@@ -84,18 +84,12 @@ public class ItemRequestController {
                 .uri("/requests/{requestId}", requestId)
                 .header("X-Sharer-User-Id", userId)
                 .retrieve()
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
+                        clientResponse -> Mono.error(new ValidationException("Ошибка валидации")))
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
+                        clientResponse -> Mono.error(new DataNotFoundException("Данные не найдены")))
                 .bodyToMono(new ParameterizedTypeReference<ItemRequestInfoDto>() {
                 });
         return response.block();
-    }
-
-    @ExceptionHandler(ValidationException.class)
-    public ResponseEntity<String> onBadRequest(ValidationException exception){
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST.value()).build();
-    }
-
-    @ExceptionHandler(DataNotFoundException.class)
-    public ResponseEntity<String> onNotFound(DataNotFoundException exception){
-        return ResponseEntity.status(HttpStatus.NOT_FOUND.value()).build();
     }
 }

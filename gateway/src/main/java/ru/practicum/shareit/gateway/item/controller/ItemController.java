@@ -3,6 +3,7 @@ package ru.practicum.shareit.gateway.item.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -134,8 +135,10 @@ public class ItemController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
-                        clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
+                        clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
+                .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
+                        clientResponse -> Mono.error(new ValidationException("Невалидные данные запроса")))
                 .bodyToMono(ItemOutcomeInfoDto.CommentDto.class);
         return response.block();
     }
