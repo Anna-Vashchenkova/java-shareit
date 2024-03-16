@@ -25,32 +25,32 @@ import java.util.List;
 @Validated
 public class ItemController {
     private final WebClient webClient;
+    private static final String API_PREFIX = "/items";
 
     @GetMapping
-    public List<ItemOutcomeInfoDto> get(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<List<ItemOutcomeInfoDto>> get(@RequestHeader("X-Sharer-User-Id") Long userId,
                                         @RequestParam(name = "from", defaultValue = "0") int from,
                                         @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос - показать список вещей пользователя '{}' по {} элементов на странице {}", userId, size, from);
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        Mono<List<ItemOutcomeInfoDto>> response = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/items")
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path(API_PREFIX)
                         .queryParam("from", from)
                         .queryParam("size", size).build())
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<ItemOutcomeInfoDto>>() {
                 });
-        return response.block();
     }
 
     @PostMapping
-    public ItemOutcomeDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<ItemOutcomeDto> add(@RequestHeader("X-Sharer-User-Id") Long userId,
                               @Valid @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на добавление итема '{}' пользователю '{}'", dto, userId);
-        Mono<ItemOutcomeDto> response = webClient.post()
-                .uri("/items")
+        return webClient.post()
+                .uri(API_PREFIX)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -58,16 +58,15 @@ public class ItemController {
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeDto.class);
-        return response.block();
     }
 
     @PatchMapping("/{itemId}")
-    public ItemOutcomeDto updateItem(@PathVariable("itemId") long itemId,
+    public Mono<ItemOutcomeDto> updateItem(@PathVariable("itemId") long itemId,
                                     @RequestHeader("X-Sharer-User-Id") Long userId,
                                     @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на обновление данных итема '{}' у пользователя '{}'",itemId, userId);
-        Mono<ItemOutcomeDto> response = webClient.patch()
-                .uri("/items/{itemId}", itemId)
+        return webClient.patch()
+                .uri(API_PREFIX + "/{itemId}", itemId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -75,21 +74,19 @@ public class ItemController {
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeDto.class);
-        return response.block();
     }
 
     @GetMapping("/{itemId}")
-    public ItemOutcomeInfoDto getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Mono<ItemOutcomeInfoDto> getItemById(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @PathVariable("itemId") Long itemId) {
         log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
-        Mono<ItemOutcomeInfoDto> response = webClient.get()
-                .uri("/items/{itemId}", itemId)
+        return webClient.get()
+                .uri(API_PREFIX + "/{itemId}", itemId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeInfoDto.class);
-        return response.block();
     }
 
     @DeleteMapping("/{itemId}")
@@ -97,14 +94,13 @@ public class ItemController {
                            @PathVariable long itemId) {
         log.info("Получен запрос на удаление итема '{}' пользователя '{}'",itemId, userId);
         webClient.delete()
-                .uri("/items/{itemId}", itemId)
+                .uri(API_PREFIX + "/{itemId}", itemId)
                 .retrieve()
-                .bodyToMono(Void.class)
-                .block();
+                .bodyToMono(Void.class);
     }
 
     @GetMapping("/search")
-    public List<ItemOutcomeDto> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
+    public Mono<List<ItemOutcomeDto>> searchItem(@RequestHeader("X-Sharer-User-Id") long userId,
                                           @RequestParam String text,
                                            @RequestParam(name = "from", defaultValue = "0") int from,
                                            @RequestParam(name = "size", defaultValue = "10") int size) {
@@ -112,9 +108,9 @@ public class ItemController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        Mono<List<ItemOutcomeDto>> response = webClient.get()
+        return webClient.get()
                 .uri(uriBuilder ->
-                        uriBuilder.path("/items/search")
+                        uriBuilder.path(API_PREFIX + "/search")
                                 .queryParam("text", text)
                                 .queryParam("from", from)
                                 .queryParam("size", size)
@@ -123,14 +119,13 @@ public class ItemController {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<ItemOutcomeDto>>() {
                 });
-        return response.block();
     }
 
     @PostMapping("/{itemId}/comment")
-    public ItemOutcomeInfoDto.CommentDto addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
+    public Mono<ItemOutcomeInfoDto.CommentDto> addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
                                                     @Valid @RequestBody ItemOutcomeInfoDto.CommentDto dto) {
-        Mono<ItemOutcomeInfoDto.CommentDto> response = webClient.post()
-                .uri("/items/{itemId}/comment", itemId)
+        return webClient.post()
+                .uri(API_PREFIX + "/{itemId}/comment", itemId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -140,6 +135,5 @@ public class ItemController {
                 .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
                         clientResponse -> Mono.error(new ValidationException("Невалидные данные запроса")))
                 .bodyToMono(ItemOutcomeInfoDto.CommentDto.class);
-        return response.block();
     }
 }
