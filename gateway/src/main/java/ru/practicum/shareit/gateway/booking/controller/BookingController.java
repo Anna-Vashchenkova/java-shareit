@@ -25,13 +25,14 @@ import java.util.List;
 @Validated
 public class BookingController {
     private final WebClient webClient;
+    private static final String API_PREFIX = "/bookings";
 
     @PostMapping()
     public BookingOutcomeDto saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @Valid @RequestBody BookingIncomeDto dto) {
         log.info("Получен запрос на добавление бронирования '{}' пользователем '{}'",dto, userId);
         Mono<BookingOutcomeDto> response = webClient.post()
-                .uri("/bookings")
+                .uri(API_PREFIX)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
@@ -73,7 +74,7 @@ public class BookingController {
                                             @PathVariable("bookingId") long bookingId) {
         log.info("Получен запрос на получение информации о бронировании с ID={}", bookingId);
         Mono<BookingOutcomeDto> response = webClient.get()
-                .uri("/bookings/{bookingId}", bookingId)
+                .uri(API_PREFIX + "/{bookingId}", bookingId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
@@ -99,7 +100,7 @@ public class BookingController {
             throw new ValidationException("Неверные параметры запроса");
         }
         Mono<List<BookingOutcomeDto>> response = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/bookings")
+                .uri(uriBuilder -> uriBuilder.path(API_PREFIX)
                         .queryParam("state", stateParam)
                         .queryParam("from", from)
                         .queryParam("size", size).build())
@@ -129,7 +130,7 @@ public class BookingController {
             throw new ValidationException("Неверные параметры запроса");
         }
         Mono<List<BookingOutcomeDto>> response = webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("/bookings/owner")
+                .uri(uriBuilder -> uriBuilder.path(API_PREFIX + "/owner")
                         .queryParam("state", stateParam)
                         .queryParam("from", from)
                         .queryParam("size", size).build())
