@@ -27,44 +27,43 @@ import java.util.List;
 @Validated
 public class ItemRequestController {
     private final WebClient webClient;
+    private static final String API_PREFIX = "/requests";
 
     @PostMapping
-    public ItemRequestDto addRequest(@RequestHeader("X-Sharer-User-Id") String userId,
+    public Mono<ItemRequestDto> addRequest(@RequestHeader("X-Sharer-User-Id") String userId,
                                      @Valid @RequestBody ItemRequestIncomeDto dto) {
         log.info("Получен запрос на добавление запроса '{}' пользователю '{}'", dto, userId);
-        Mono<ItemRequestDto> itemRequestDtoMono = webClient.post()
-                .uri("/requests")
+        return webClient.post()
+                .uri(API_PREFIX)
                 .header("X-Sharer-User-Id", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .retrieve()
                 .bodyToMono(ItemRequestDto.class);
-        return itemRequestDtoMono.block();
     }
 
     @GetMapping
-    public List<ItemRequestInfoDto> getRequests(@RequestHeader("X-Sharer-User-Id") String userId) {
+    public Mono<List<ItemRequestInfoDto>> getRequests(@RequestHeader("X-Sharer-User-Id") String userId) {
         log.info("Получен запрос - показать список запросов пользователя '{}'", userId);
-        Mono<List<ItemRequestInfoDto>> response = webClient.get()
-                .uri("/requests")
+        return webClient.get()
+                .uri(API_PREFIX)
                 .header("X-Sharer-User-Id", userId)
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<ItemRequestInfoDto>>() {
                 });
-        return response.block();
     }
 
     @GetMapping("/all")
-    public List<ItemRequestInfoDto> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<List<ItemRequestInfoDto>> getAllRequests(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                    @PositiveOrZero @RequestParam(name = "from", defaultValue = "0") int from,
                                                    @Positive @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос от пользователя '{}'- показать {} запросов других пользователей на {} странице ", userId, size, from);
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        Mono<List<ItemRequestInfoDto>> response = webClient.get()
+        return webClient.get()
                 .uri(uriBuilder ->
-                    uriBuilder.path("/requests/all")
+                    uriBuilder.path(API_PREFIX + "/all")
                             .queryParam("from", "0")
                             .queryParam("size", "10")
                             .build())
@@ -72,15 +71,14 @@ public class ItemRequestController {
                 .retrieve()
                 .bodyToMono(new ParameterizedTypeReference<List<ItemRequestInfoDto>>() {
                 });
-        return response.block();
     }
 
     @GetMapping("/{requestId}")
-    public ItemRequestInfoDto getRequestById(@RequestHeader("X-Sharer-User-Id") String userId,
+    public Mono<ItemRequestInfoDto> getRequestById(@RequestHeader("X-Sharer-User-Id") String userId,
                                              @PathVariable("requestId") Long requestId) {
         log.info("Получен запрос от пользователя '{}' - показать запрос '{}'", userId, requestId);
-        Mono<ItemRequestInfoDto> response = webClient.get()
-                .uri("/requests/{requestId}", requestId)
+        return webClient.get()
+                .uri(API_PREFIX + "/{requestId}", requestId)
                 .header("X-Sharer-User-Id", userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
@@ -89,6 +87,5 @@ public class ItemRequestController {
                         clientResponse -> Mono.error(new DataNotFoundException("Данные не найдены")))
                 .bodyToMono(new ParameterizedTypeReference<ItemRequestInfoDto>() {
                 });
-        return response.block();
     }
 }
