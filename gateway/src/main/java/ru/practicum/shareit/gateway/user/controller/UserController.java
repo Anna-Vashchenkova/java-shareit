@@ -23,7 +23,6 @@ public class UserController {
     private final WebClient webClient;
     private static final String API_PREFIX = "/users";
 
-
     @GetMapping
     public Mono<List<UserDto>> getAllUsers() {
         log.info("Получен запрос на получение списка всех пользователей");
@@ -75,6 +74,15 @@ public class UserController {
         webClient.delete()
                 .uri(API_PREFIX + "/{userId}", userId)
                 .retrieve()
-                .bodyToMono(Void.class);
+                .bodyToMono(Void.class).block();
     }
+
+    /*@DeleteMapping("/{userId}")
+    public void deleteUser(@PathVariable("userId") Long userId) {
+        log.info("Получен запрос - удалить данные пользователя '{}'", userId);
+        webClient.delete()
+                .uri("/users/{userId}", userId)
+                .retrieve()
+                .bodyToMono(Void.class).block();
+    }*/
 }

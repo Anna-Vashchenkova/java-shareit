@@ -81,7 +81,7 @@ public class BookingController {
     }
 
     @GetMapping()
-    public Mono<List<BookingOutcomeDto>> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public List<BookingOutcomeDto> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam,
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
@@ -106,7 +106,7 @@ public class BookingController {
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
-                });
+                }).block();
     }
 
     @GetMapping("/owner")
