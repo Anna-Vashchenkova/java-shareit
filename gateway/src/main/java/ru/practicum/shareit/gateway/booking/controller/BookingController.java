@@ -28,10 +28,10 @@ public class BookingController {
     private static final String API_PREFIX = "/bookings";
 
     @PostMapping()
-    public BookingOutcomeDto saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<BookingOutcomeDto> saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @Valid @RequestBody BookingIncomeDto dto) {
         log.info("Получен запрос на добавление бронирования '{}' пользователем '{}'",dto, userId);
-        Mono<BookingOutcomeDto> response = webClient.post()
+        return webClient.post()
                 .uri(API_PREFIX)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
@@ -42,18 +42,17 @@ public class BookingController {
                 .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(BookingOutcomeDto.class);
-        return response.block();
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingOutcomeDto approveBooking(@PathVariable("bookingId") long bookingId,
+    public Mono<BookingOutcomeDto> approveBooking(@PathVariable("bookingId") long bookingId,
                                            @RequestHeader("X-Sharer-User-Id") Long userId,
                                            @RequestParam Boolean approved) {
         log.info("Получен запрос на обновление статуса бронирования с ID={}", bookingId);
         if (approved == null) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        Mono<BookingOutcomeDto> response = webClient.patch()
+        return webClient.patch()
                 .uri(uriBuilder -> uriBuilder
                         .pathSegment("bookings", "{bookingId}")
                         .queryParam("approved", approved)
@@ -66,25 +65,23 @@ public class BookingController {
                 .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
                         clientResponse -> Mono.error(new ValidationException("Невалидные данные запроса")))
                 .bodyToMono(BookingOutcomeDto.class);
-        return response.block();
     }
 
     @GetMapping("/{bookingId}")
-    public BookingOutcomeDto getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<BookingOutcomeDto> getBookingById(@RequestHeader("X-Sharer-User-Id") Long userId,
                                             @PathVariable("bookingId") long bookingId) {
         log.info("Получен запрос на получение информации о бронировании с ID={}", bookingId);
-        Mono<BookingOutcomeDto> response = webClient.get()
+        return webClient.get()
                 .uri(API_PREFIX + "/{bookingId}", bookingId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.is4xxClientError(),
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(BookingOutcomeDto.class);
-        return response.block();
     }
 
     @GetMapping()
-    public List<BookingOutcomeDto> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<List<BookingOutcomeDto>> getBookingsByUser(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam,
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
@@ -99,7 +96,7 @@ public class BookingController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        Mono<List<BookingOutcomeDto>> response = webClient.get()
+        return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(API_PREFIX)
                         .queryParam("state", stateParam)
                         .queryParam("from", from)
@@ -110,11 +107,10 @@ public class BookingController {
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
                 });
-            return response.block();
     }
 
     @GetMapping("/owner")
-    public List<BookingOutcomeDto> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public Mono<List<BookingOutcomeDto>> getBookingsByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
                                                      @RequestParam (name = "state", defaultValue = "ALL") String stateParam,
                                                       @RequestParam(name = "from", defaultValue = "0") int from,
                                                       @RequestParam(name = "size", defaultValue = "10") int size) {
@@ -129,7 +125,7 @@ public class BookingController {
         if ((from < 0) || (size < 1)) {
             throw new ValidationException("Неверные параметры запроса");
         }
-        Mono<List<BookingOutcomeDto>> response = webClient.get()
+        return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(API_PREFIX + "/owner")
                         .queryParam("state", stateParam)
                         .queryParam("from", from)
@@ -140,6 +136,5 @@ public class BookingController {
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
                 });
-        return response.block();
     }
 }
