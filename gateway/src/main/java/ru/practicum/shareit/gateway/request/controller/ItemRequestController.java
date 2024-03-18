@@ -28,6 +28,8 @@ import java.util.List;
 public class ItemRequestController {
     private final WebClient webClient;
     private static final String API_PREFIX = "/requests";
+    private static final String API_PATH = "/{requestId}";
+
 
     @PostMapping
     public Mono<ItemRequestDto> addRequest(@RequestHeader("X-Sharer-User-Id") String userId,
@@ -49,7 +51,7 @@ public class ItemRequestController {
                 .uri(API_PREFIX)
                 .header("X-Sharer-User-Id", userId)
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ItemRequestInfoDto>>() {
+                .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
 
@@ -69,7 +71,7 @@ public class ItemRequestController {
                             .build())
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ItemRequestInfoDto>>() {
+                .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
 
@@ -78,14 +80,14 @@ public class ItemRequestController {
                                              @PathVariable("requestId") Long requestId) {
         log.info("Получен запрос от пользователя '{}' - показать запрос '{}'", userId, requestId);
         return webClient.get()
-                .uri(API_PREFIX + "/{requestId}", requestId)
+                .uri(API_PREFIX + API_PATH, requestId)
                 .header("X-Sharer-User-Id", userId)
                 .retrieve()
                 .onStatus(httpStatus -> httpStatus.equals(HttpStatus.BAD_REQUEST),
                         clientResponse -> Mono.error(new ValidationException("Ошибка валидации")))
                 .onStatus(httpStatus -> httpStatus.equals(HttpStatus.NOT_FOUND),
                         clientResponse -> Mono.error(new DataNotFoundException("Данные не найдены")))
-                .bodyToMono(new ParameterizedTypeReference<ItemRequestInfoDto>() {
+                .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
 }
