@@ -89,9 +89,8 @@ public class BookingController {
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на получение " +
                 "{} бронирований на странице {} пользователя с ID={} с параметром STATE={}", size, from, userId, stateParam);
-        SearchStatus state;
         try {
-            state = SearchStatus.valueOf(stateParam);
+            SearchStatus.valueOf(stateParam);
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
@@ -118,9 +117,8 @@ public class BookingController {
                                                       @RequestParam(name = "size", defaultValue = "10") int size) {
         log.info("Получен запрос на получение " +
                 "{} бронирований на странице {} владельцем вещи с ID={} с параметром STATE={}",size, from, userId, stateParam);
-        SearchStatus state;
         try {
-            state = SearchStatus.valueOf(stateParam);
+            SearchStatus.valueOf(stateParam);
         } catch (IllegalArgumentException e) {
             throw new ValidationException("Unknown state: UNSUPPORTED_STATUS");
         }
