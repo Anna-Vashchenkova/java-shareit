@@ -26,6 +26,8 @@ import java.util.List;
 public class BookingController {
     private final WebClient webClient;
     private static final String API_PREFIX = "/bookings";
+    private static final String API_PATH = "/{bookingId}";
+
 
     @PostMapping()
     public Mono<BookingOutcomeDto> saveNewBooking(@RequestHeader("X-Sharer-User-Id") Long userId,
@@ -72,10 +74,10 @@ public class BookingController {
                                             @PathVariable("bookingId") long bookingId) {
         log.info("Получен запрос на получение информации о бронировании с ID={}", bookingId);
         return webClient.get()
-                .uri(API_PREFIX + "/{bookingId}", bookingId)
+                .uri(API_PREFIX + API_PATH, bookingId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(HttpStatus::is4xxClientError,
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(BookingOutcomeDto.class);
     }
@@ -103,7 +105,7 @@ public class BookingController {
                         .queryParam("size", size).build())
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(HttpStatus::is4xxClientError,
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
                 .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
                 }).block();
@@ -132,9 +134,9 @@ public class BookingController {
                         .queryParam("size", size).build())
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(HttpStatus::is4xxClientError,
                         clientResponse -> Mono.error(new DataNotFoundException("Бронирование не найдено")))
-                .bodyToMono(new ParameterizedTypeReference<List<BookingOutcomeDto>>() {
+                .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
 }

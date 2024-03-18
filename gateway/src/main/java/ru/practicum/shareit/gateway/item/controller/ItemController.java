@@ -119,7 +119,7 @@ public class ItemController {
                                 .build())
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ItemOutcomeDto>>() {
+                .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
 
