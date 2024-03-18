@@ -31,7 +31,8 @@ public class UserController {
         return webClient.get()
                 .uri(uriBuilder -> uriBuilder.path(API_PREFIX).build())
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<UserDto>>() {});
+                .bodyToMono(new ParameterizedTypeReference<>() {
+                });
     }
 
     @PostMapping

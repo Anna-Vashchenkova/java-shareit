@@ -26,6 +26,7 @@ import java.util.List;
 public class ItemController {
     private final WebClient webClient;
     private static final String API_PREFIX = "/items";
+    private static final String API_PATH = "/{itemId}";
 
     @GetMapping
     public Mono<List<ItemOutcomeInfoDto>> get(@RequestHeader("X-Sharer-User-Id") Long userId,
@@ -41,7 +42,7 @@ public class ItemController {
                         .queryParam("size", size).build())
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .bodyToMono(new ParameterizedTypeReference<List<ItemOutcomeInfoDto>>() {
+                .bodyToMono(new ParameterizedTypeReference<>() {
                 });
     }
 
@@ -55,7 +56,7 @@ public class ItemController {
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(HttpStatus::is4xxClientError,
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeDto.class);
     }
@@ -66,12 +67,12 @@ public class ItemController {
                                     @RequestBody ItemIncomeDto dto) {
         log.info("Получен запрос на обновление данных итема '{}' у пользователя '{}'",itemId, userId);
         return webClient.patch()
-                .uri(API_PREFIX + "/{itemId}", itemId)
+                .uri(API_PREFIX + API_PATH, itemId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(HttpStatus::is4xxClientError,
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeDto.class);
     }
@@ -81,10 +82,10 @@ public class ItemController {
                                           @PathVariable("itemId") Long itemId) {
         log.info("Получен запрос от пользователя '{}' - показать итем '{}'", userId, itemId);
         return webClient.get()
-                .uri(API_PREFIX + "/{itemId}", itemId)
+                .uri(API_PREFIX + API_PATH, itemId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .retrieve()
-                .onStatus(httpStatus -> httpStatus.is4xxClientError(),
+                .onStatus(HttpStatus::is4xxClientError,
                         clientResponse -> Mono.error(new DataNotFoundException("Итем не найден")))
                 .bodyToMono(ItemOutcomeInfoDto.class);
     }
@@ -94,9 +95,10 @@ public class ItemController {
                            @PathVariable long itemId) {
         log.info("Получен запрос на удаление итема '{}' пользователя '{}'",itemId, userId);
         webClient.delete()
-                .uri(API_PREFIX + "/{itemId}", itemId)
+                .uri(API_PREFIX + API_PATH, itemId)
                 .retrieve()
-                .bodyToMono(Void.class);
+                .bodyToMono(Void.class)
+                .subscribe();
     }
 
     @GetMapping("/search")
@@ -125,7 +127,7 @@ public class ItemController {
     public Mono<ItemOutcomeInfoDto.CommentDto> addComment(@RequestHeader("X-Sharer-User-Id") Long userId, @PathVariable long itemId,
                                                     @Valid @RequestBody ItemOutcomeInfoDto.CommentDto dto) {
         return webClient.post()
-                .uri(API_PREFIX + "/{itemId}/comment", itemId)
+                .uri(API_PREFIX + API_PATH + "/comment", itemId)
                 .header("X-Sharer-User-Id", String.valueOf(userId))
                 .contentType(MediaType.APPLICATION_JSON)
                 .bodyValue(dto)
