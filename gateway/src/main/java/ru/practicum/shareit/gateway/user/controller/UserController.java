@@ -13,6 +13,7 @@ import ru.practicum.shareit.gateway.exception.DataNotFoundException;
 import ru.practicum.shareit.gateway.user.controller.dto.UserDto;
 
 import javax.validation.Valid;
+import java.rmi.ServerException;
 import java.util.List;
 
 @Slf4j
@@ -77,6 +78,10 @@ public class UserController {
         webClient.delete()
                 .uri(API_PREFIX + API_PATH, userId)
                 .retrieve()
+                .onStatus(HttpStatus::is4xxClientError,
+                clientResponse -> Mono.error(new DataNotFoundException("User not found")))
+                .onStatus(HttpStatus::is5xxServerError,
+                        clientResponse -> Mono.error(new ServerException("Server error occurred")))
                 .bodyToMono(Void.class)
                 .subscribe();
     }
